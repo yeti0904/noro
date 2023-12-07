@@ -1,0 +1,14 @@
+module noro.app;
+
+import std.stdio;
+import noro.terminal.screen;
+import noro.terminal.input;
+
+void main() {
+	auto screen = new Screen();
+	screen.buffer.SetBGColour(Colour16.Blue);
+	screen.buffer.Print("π");
+	screen.Render();
+
+	GetChar();
+}

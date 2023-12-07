@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/noro
+noro.so
+noro.dylib
+noro.dll
+noro.a
+noro.lib
+noro-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
