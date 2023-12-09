@@ -22,7 +22,6 @@ alias cc_t     = ubyte;
 alias speed_t  = int;
 alias tcflag_t = int;
 
-// i have no clue if this will work
 const int NCCS      = 32;
 const int TCSAFLUSH = 2;
 const int ICANON    = 2;
@@ -30,6 +29,15 @@ const int VMIN      = 6;
 const int VTIME     = 5;
 const int TCSANOW   = 0;
 const int ECHO      = 8;
+const int BRKINT    = 2;
+const int ICRNL     = 256;
+const int INPCK     = 16;
+const int ISTRIP    = 32;
+const int IXON      = 1024;
+const int OPOST     = 48;
+const int IEXTEN    = 32768;
+const int ISIG      = 1;
+const int CS8       = 48;
 
 struct termios {
 	tcflag_t   c_iflag;
@@ -44,4 +52,5 @@ struct termios {
 
 extern(C) int  tcgetattr(int, termios*);
 extern(C) int  tcsetattr(int, int, termios*);
+extern(C) void cfmakeraw(termios*);
 extern(C) long read(int, void*, size_t);

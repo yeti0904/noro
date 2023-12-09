@@ -1,5 +1,6 @@
 module noro.terminal.buffer;
 
+import std.format;
 import noro.types;
 
 enum ColourMode {
@@ -41,6 +42,20 @@ struct Attr {
 	ColourMode mode = ColourMode.Colour16;
 	Colour     fg;
 	Colour     bg;
+
+	bool opEquals(Attr b) {
+		if (mode != b.mode) return false;
+
+		switch (mode) {
+			case ColourMode.Colour16: {
+				return (
+					(fg.byteColour == b.fg.byteColour) &&
+					(bg.byteColour == b.bg.byteColour)
+				);
+			}
+			default: assert(0);
+		}
+	}
 }
 
 enum Character {
@@ -49,7 +64,13 @@ enum Character {
 	CornerUR = '┐',
 	CornerLR = '┘',
 	VLine    = '│',
-	HLine    = '─'
+	HLine    = '─',
+	DCornerUL = '╔',
+	DCornerLL = '╚',
+	DCornerUR = '╗',
+	DCornerLR = '╝',
+	DVLine    = '║',
+	DHLine    = '═'
 }
 
 struct Cell {
@@ -58,8 +79,8 @@ struct Cell {
 
 	this(dchar pch) {
 		ch                 = pch;
-		attr.fg.byteColour = Colour16.Default;
-		attr.bg.byteColour = Colour16.Default;
+		attr.fg.byteColour = Colour16.White;
+		attr.bg.byteColour = Colour16.Black;
 	}
 
 	this(dchar pch, Attr pattr) {
@@ -83,13 +104,36 @@ class Buffer {
 
 	this(Vec2!ushort size) {
 		Resize(size.x, size.y);
-		attr.fg.byteColour = Colour16.Default;
-		attr.bg.byteColour = Colour16.Default;
+		attr.fg.byteColour = Colour16.White;
+		attr.bg.byteColour = Colour16.Black;
+
+		foreach (ref cell ; cells) {
+			cell.attr = attr;
+		}
 	}
 
 	void Resize(ushort w, ushort h) {
+		if (cells is null) {
+			cells = new Cell[](w * h);
+			size  = Vec2!ushort(w, h);
+			return;
+		}
+
+		auto newCells = new Cell[](w * h);
+
+		for (ushort x = 0; x < size.x; ++ x) {
+			for (ushort y = 0; y < size.y; ++ y) {
+				if ((x >= w) || (y >= h)) {
+					newCells[(y * w) + x] = Cell(' ');
+				}
+				else {
+					newCells[(y * w) + x] = cells[GetIndex(x, y)];
+				}
+			}
+		}
+
+		cells = newCells;
 		size  = Vec2!ushort(w, h);
-		cells = new Cell[](w * h);
 	}
 
 	Vec2!ushort GetSize() {
@@ -104,8 +148,18 @@ class Buffer {
 		return GetIndex(caret.x, caret.y);
 	}
 
+	void Print(ushort x, ushort y, dchar ch) {
+		if ((x >= size.x) || (y >= size.y)) {
+			return;
+		}
+
+		cells[GetIndex(x, y)] = Cell(ch, attr);
+	}
+
 	void Print(dchar ch) {
-		cells[GetCaretIndex()] = Cell(ch, attr);
+		if ((caret.x < size.x) && (caret.y < size.y)) {
+			cells[GetCaretIndex()] = Cell(ch, attr);
+		}
 		
 		++ caret.x;
 		if (caret.x >= size.x) {
@@ -118,6 +172,10 @@ class Buffer {
 		foreach (dchar ch ; str) {
 			Print(ch);
 		}
+	}
+	
+	void Printf(Char, A...)(in Char[] fmt, A args) {
+		Print(format(fmt, args));
 	}
 
 	void SetFGColour(Colour16 colour) {
@@ -141,5 +199,28 @@ class Buffer {
 		caret = other.caret;
 		attr  = other.attr;
 		size  = other.GetSize();
+	}
+
+	void BlitBuffer(Buffer other, ushort x, ushort y) {
+		for (ushort iy = 0; iy < other.GetSize().y; ++ iy) {
+			for (ushort ix = 0; ix < other.GetSize().x; ++ ix) {
+				auto pos = Vec2!ushort(cast(ushort) (x + ix), cast(ushort) (y + iy));
+				if ((pos.x >= size.x) || (pos.y >= size.y)) continue;
+				
+				cells[GetIndex(pos.x, pos.y)] = other.cells[other.GetIndex(ix, iy)];
+			}
+		}
+	}
+
+	void HLine(ushort x, ushort y, ushort len, dchar ch) {
+		foreach (i ; 0 .. len) {
+			Print(cast(ushort) (x + i), y, ch);
+		}
+	}
+
+	void VLine(ushort x, ushort y, ushort len, dchar ch) {
+		foreach (i ; 0 .. len) {
+			Print(x, cast(ushort) (y + i), ch);
+		}
 	}
 }

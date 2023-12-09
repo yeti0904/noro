@@ -8,7 +8,7 @@ import noro.binding;
 enum Key {
 	Null = 0,
 	// VT sequences
-	Home = 1000,
+	Home = 1000000,
 	Insert,
 	Delete,
 	End,
@@ -16,24 +16,24 @@ enum Key {
 	PgDn,
 	Home2,
 	End2,
-	F0 = 1010,
+	F0 = 1000010,
 	F1,
 	F2,
 	F3,
 	F4,
 	F5,
-	F6 = 1017,
+	F6 = 1000017,
 	F7,
 	F8,
 	F9,
 	F10,
-	F11 = 1023,
+	F11 = 1000023,
 	F12,
 	F13,
 	F14,
-	F15 = 1028,
+	F15 = 1000028,
 	F16,
-	F17 = 1031,
+	F17 = 1000031,
 	F18,
 	F19,
 	F20, 
@@ -45,17 +45,28 @@ enum Key {
 	Escape = '\x1b'
 }
 
+enum KeyMod {
+	Shift = 0b00000001,
+	Alt   = 0b00000010,
+	Ctrl  = 0b00000100,
+	Meta  = 0b00001000
+}
+
 struct KeyPress {
 	dchar key;
-	bool  ctrl;
+	ubyte mod;
 
 	this(dchar pkey) {
 		key = pkey;
 	}
 
-	this(dchar pkey, bool pctrl) {
-		key  = pkey;
-		ctrl = pctrl;
+	this(dchar pkey, ubyte pmod) {
+		key = pkey;
+		mod = pmod;
+	}
+
+	bool IsText() {
+		return (mod == 0) && (key < 1000000);
 	}
 }
 
@@ -96,6 +107,21 @@ static dchar XTermKey(char ch) {
 	}
 }
 
+ubyte GetMod(int mod) {
+	-- mod;
+
+	switch (mod) {
+		case 1:  return KeyMod.Shift;
+		case 2:  return KeyMod.Alt;
+		case 3:  return KeyMod.Shift | KeyMod.Alt;
+		case 4:  return KeyMod.Ctrl;
+		case 5:  return KeyMod.Ctrl | KeyMod.Shift;
+		case 6:  return KeyMod.Ctrl | KeyMod.Alt;
+		case 7:  return KeyMod.Ctrl | KeyMod.Alt | KeyMod.Shift;
+		default: return 0;
+	}
+}
+
 KeyPress GetKey() {
 	auto ch = GetChar();
 
@@ -106,32 +132,32 @@ KeyPress GetKey() {
 
 	switch (ch) {
 		case '\x1b':       break;
-		case ('a' & 0x1F): return KeyPress('a', true);
-		case ('b' & 0x1F): return KeyPress('b', true);
-		case ('c' & 0x1F): return KeyPress('c', true);
-		case ('d' & 0x1F): return KeyPress('d', true);
-		case ('e' & 0x1F): return KeyPress('e', true);
-		case ('f' & 0x1F): return KeyPress('f', true);
-		case ('g' & 0x1F): return KeyPress('g', true);
-		case ('h' & 0x1F): return KeyPress('h', true);
-		case ('i' & 0x1F): return KeyPress('i', true);
-		case ('j' & 0x1F): return KeyPress('j', true);
-		case ('k' & 0x1F): return KeyPress('k', true);
-		case ('l' & 0x1F): return KeyPress('l', true);
-		case ('m' & 0x1F): return KeyPress('m', true);
-		case ('n' & 0x1F): return KeyPress('n', true);
-		case ('o' & 0x1F): return KeyPress('o', true);
-		case ('p' & 0x1F): return KeyPress('p', true);
-		case ('q' & 0x1F): return KeyPress('q', true);
-		case ('r' & 0x1F): return KeyPress('r', true);
-		case ('s' & 0x1F): return KeyPress('s', true);
-		case ('t' & 0x1F): return KeyPress('t', true);
-		case ('u' & 0x1F): return KeyPress('u', true);
-		case ('v' & 0x1F): return KeyPress('v', true);
-		case ('w' & 0x1F): return KeyPress('w', true);
-		case ('x' & 0x1F): return KeyPress('x', true);
-		case ('y' & 0x1F): return KeyPress('y', true);
-		case ('z' & 0x1F): return KeyPress('z', true);
+		case ('a' & 0x1F): return KeyPress('a', KeyMod.Ctrl);
+		case ('b' & 0x1F): return KeyPress('b', KeyMod.Ctrl);
+		case ('c' & 0x1F): return KeyPress('c', KeyMod.Ctrl);
+		case ('d' & 0x1F): return KeyPress('d', KeyMod.Ctrl);
+		case ('e' & 0x1F): return KeyPress('e', KeyMod.Ctrl);
+		case ('f' & 0x1F): return KeyPress('f', KeyMod.Ctrl);
+		case ('g' & 0x1F): return KeyPress('g', KeyMod.Ctrl);
+		case ('h' & 0x1F): return KeyPress('h', KeyMod.Ctrl);
+		case ('i' & 0x1F): return KeyPress('i', KeyMod.Ctrl);
+		case ('j' & 0x1F): return KeyPress('j', KeyMod.Ctrl);
+		case ('k' & 0x1F): return KeyPress('k', KeyMod.Ctrl);
+		case ('l' & 0x1F): return KeyPress('l', KeyMod.Ctrl);
+		case ('m' & 0x1F): return KeyPress('m', KeyMod.Ctrl);
+		case ('n' & 0x1F): return KeyPress('n', KeyMod.Ctrl);
+		case ('o' & 0x1F): return KeyPress('o', KeyMod.Ctrl);
+		case ('p' & 0x1F): return KeyPress('p', KeyMod.Ctrl);
+		case ('q' & 0x1F): return KeyPress('q', KeyMod.Ctrl);
+		case ('r' & 0x1F): return KeyPress('r', KeyMod.Ctrl);
+		case ('s' & 0x1F): return KeyPress('s', KeyMod.Ctrl);
+		case ('t' & 0x1F): return KeyPress('t', KeyMod.Ctrl);
+		case ('u' & 0x1F): return KeyPress('u', KeyMod.Ctrl);
+		case ('v' & 0x1F): return KeyPress('v', KeyMod.Ctrl);
+		case ('w' & 0x1F): return KeyPress('w', KeyMod.Ctrl);
+		case ('x' & 0x1F): return KeyPress('x', KeyMod.Ctrl);
+		case ('y' & 0x1F): return KeyPress('y', KeyMod.Ctrl);
+		case ('z' & 0x1F): return KeyPress('z', KeyMod.Ctrl);
 		default:           return KeyPress(ch);
 	}
 
@@ -158,12 +184,8 @@ KeyPress GetKey() {
 						reading  = "";
 					}
 					else if (isAlpha(ch)) {
-						auto ret = KeyPress(XTermKey(ch));
-
-						if (numbers[1] == 4) {
-							ret.ctrl = true;
-						}
-						return ret;
+						numbers ~= parse!int(reading);
+						return KeyPress(XTermKey(ch), GetMod(numbers[1]));
 					}
 					else {
 						reading ~= ch;
@@ -171,17 +193,10 @@ KeyPress GetKey() {
 				}
 
 				if (numbers.length == 1) {
-					return KeyPress(VtKey(numbers[0] + 1000));
+					return KeyPress(VtKey(numbers[0] + 1000000));
 				}
 				else if (numbers.length == 2) {
-					auto ret = KeyPress(VtKey(numbers[0] + 1000));
-					
-					numbers[1] -= 1;
-
-					if (numbers[1] == 4) {
-						ret.ctrl = true;
-					}
-					return ret;
+					return KeyPress(VtKey(numbers[0] + 1000000), GetMod(numbers[1]));
 				}
 				else {
 					return KeyPress(Key.Null);
