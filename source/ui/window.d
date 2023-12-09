@@ -25,13 +25,18 @@ class UIWindow : UIBase {
 		}
 	}
 
-	override void Render() {
+	override void Render(bool focused) {
 		buffer.Clear(' ');
 		if (program) {
 			program.Render(contents);
 		}
-	
-		buffer.BlitBuffer(contents, 1, 1);
+
+		if (border) {
+			buffer.BlitBuffer(contents, 0, 0);
+		}
+		else {
+			buffer.BlitBuffer(contents, 1, 1);
+		}
 
 		dchar cornerUR = focused? Character.DCornerUR : Character.CornerUR;
 		dchar cornerUL = focused? Character.DCornerUL : Character.CornerUL;
@@ -41,6 +46,11 @@ class UIWindow : UIBase {
 		dchar vLine    = focused? Character.DVLine    : Character.VLine;
 
 		// corners
+		if (!border) {
+			buffer.caret = contents.caret;
+			return;
+		}
+		
 		buffer.SetBGColour(borderBG);
 		buffer.SetFGColour(borderFG);
 		buffer.Print(0, 0, cornerUL);
@@ -82,7 +92,13 @@ class UIWindow : UIBase {
 
 	override void Resize(ushort w, ushort h) {
 		buffer.Resize(w, h);
-		contents.Resize(cast(ushort) (w - 2), cast(ushort) (h - 2));
+
+		if (border) {
+			contents.Resize(w, h);
+		}
+		else {
+			contents.Resize(cast(ushort) (w - 2), cast(ushort) (h - 2));
+		}
 	}
 
 	override Vec2!ushort GetSize() {

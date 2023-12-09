@@ -1,7 +1,8 @@
-core.exception.ArrayIndexError@source/terminal/input.d(187): index [1] is out of bounds for array of length 1
+core.exception.ArrayIndexError@source/terminal/buffer.d(127): index [2880] is out of bounds for array of length 2880
 ----------------
-??:? onArrayIndexError [0x561fabc8c992]
-??:? _d_arraybounds_indexp [0x561fabc817db]
-source/terminal/input.d:187 noro.terminal.input.KeyPress noro.terminal.input.GetKey() [0x561fabc746e5]
-source/app.d:66 void noro.app.App.Update() [0x561fabc55b56]
-source/app.d:213 _Dmain [0x561fabc562dd]
+??:? onArrayIndexError [0x557b24b144fa]
+??:? _d_arraybounds_indexp [0x557b24b09343]
+source/terminal/buffer.d:127 void noro.terminal.buffer.Buffer.Resize(ushort, ushort) [0x557b24afad75]
+source/ui/window.d:84 void noro.ui.window.UIWindow.Resize(ushort, ushort) [0x557b24afe978]
+source/app.d:161 void noro.app.App.Update() [0x557b24ade066]
+source/app.d:213 _Dmain [0x557b24ade2dd]

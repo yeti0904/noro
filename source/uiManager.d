@@ -6,28 +6,22 @@ import noro.terminal.input;
 
 class UIManager {
 	UIBase[] elements;
+	UIBase   focused;
 
-	void MoveTop(size_t index) {
-		elements[$ - 1].focused = false;
-
-		auto elem  = elements[index];
-		elements   = elements.remove(index);
-		elements  ~= elem;
-
-		elements[$ - 1].focused = true;
+	void SetFocused(size_t index) {
+		focused = elements[index];
 	}
 
-	UIBase Top() {
-		return elements[$ - 1];
+	UIBase Focused() {
+		return focused;
 	}
 
 	void Add(UIBase element) {
-		if (elements.length > 0) {
-			elements[$ - 1].focused = false;
+		elements ~= element;
+
+		if (elements.length == 1) {
+			focused = element;
 		}
-	
-		elements                ~= element;
-		elements[$ - 1].focused  = true;
 	}
 
 	void Update() {
@@ -37,19 +31,19 @@ class UIManager {
 	}
 
 	void Input(KeyPress key) {
-		elements[$ - 1].Input(key);
+		focused.Input(key);
 	}
 
 	void Render(Buffer buf) {
 		foreach (ref elem ; elements) {
-			elem.Render();
+			elem.Render(elem is focused);
 			buf.BlitBuffer(elem.buffer, elem.pos.x, elem.pos.y);
 		}
 	}
 
 	void SetCaret(Buffer buf) {
-		buf.caret    = elements[$ - 1].buffer.caret;
-		buf.caret.x += elements[$ - 1].pos.x;
-		buf.caret.y += elements[$ - 1].pos.y;
+		buf.caret    = focused.buffer.caret;
+		buf.caret.x += focused.pos.x;
+		buf.caret.y += focused.pos.y;
 	}
 }

@@ -50,7 +50,7 @@ class App {
 		buffer.SetBGColour(Colour16.Blue);
 		buffer.Clear(' ');
 
-		// render top bar
+		// render Focused bar
 		buffer.SetBGColour(Colour16.White);
 		buffer.SetFGColour(Colour16.Black);
 		buffer.HLine(0, 0, buffer.GetSize().x, ' ');
@@ -88,21 +88,33 @@ class App {
 						break;
 					}
 					case 'f': {
-						ui.Top().pos = Vec2!ushort(0, 1);
-						ui.Top().Resize(
+						ui.Focused().pos = Vec2!ushort(0, 1);
+						ui.Focused().Resize(
 							buffer.GetSize().x, cast(ushort) (buffer.GetSize().y - 1)
 						);
 						break;
 					}
 					case 'F': {
-						ui.Top().pos = Vec2!ushort(0, 0);
-						ui.Top.Resize(buffer.GetSize().x, buffer.GetSize().y);
+						ui.Focused().pos = Vec2!ushort(0, 0);
+						ui.Focused().Resize(buffer.GetSize().x, buffer.GetSize().y);
+						break;
+					}
+					case 'b': {
+						if (!(cast(UIWindow) ui.Focused())) break;
+
+						auto win   = cast(UIWindow) ui.Focused();
+						win.border = !win.border;
+						win.Resize(win.GetSize().x, win.GetSize().y);
 						break;
 					}
 					default: {
 						status = AppStatus.Standby;
 						break; // TODO: error
 					}
+				}
+
+				if (status == AppStatus.Command) {
+					status = AppStatus.Standby;
 				}
 
 				break;
@@ -115,86 +127,86 @@ class App {
 					}
 					case Key.Up: {
 						if (input.mod & KeyMod.Shift) {
-							-- ui.Top().pos.y;
+							-- ui.Focused().pos.y;
 						}
 						else {
-							ui.Top().pos.y -= 4;
+							ui.Focused().pos.y -= 4;
 						}
 						break;
 					}
 					case Key.Down: {
 						if (input.mod & KeyMod.Shift) {
-							++ ui.Top().pos.y;
+							++ ui.Focused().pos.y;
 						}
 						else {
-							ui.Top().pos.y += 4;
+							ui.Focused().pos.y += 4;
 						}
 						break;
 					}
 					case Key.Left: {
 						if (input.mod & KeyMod.Shift) {
-							-- ui.Top().pos.x;
+							-- ui.Focused().pos.x;
 						}
 						else {
-							ui.Top().pos.x -= 4;
+							ui.Focused().pos.x -= 4;
 						}
 						break;
 					}
 					case Key.Right: {
 						if (input.mod & KeyMod.Shift) {
-							++ ui.Top().pos.x;
+							++ ui.Focused().pos.x;
 						}
 						else {
-							ui.Top().pos.x += 4;
+							ui.Focused().pos.x += 4;
 						}
 						break;
 					}
 					case 'w': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						size.y -= 4;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					case 'a': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						size.x -= 4;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					case 's': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						size.y += 4;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					case 'd': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						size.x += 4;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					case 'W': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						-- size.y;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					case 'A': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						-- size.x;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					case 'S': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						++ size.y;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					case 'D': {
-						auto size = ui.Top().GetSize();
+						auto size = ui.Focused().GetSize();
 						++ size.x;
-						ui.Top().Resize(size.x, size.y);
+						ui.Focused().Resize(size.x, size.y);
 						break;
 					}
 					default: break; // TODO: error

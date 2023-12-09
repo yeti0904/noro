@@ -121,9 +121,12 @@ class Buffer {
 
 		auto newCells = new Cell[](w * h);
 
-		for (ushort x = 0; x < size.x; ++ x) {
-			for (ushort y = 0; y < size.y; ++ y) {
+		for (ushort x = 0; x < w; ++ x) {
+			for (ushort y = 0; y < h; ++ y) {
 				if ((x >= w) || (y >= h)) {
+					continue;
+				}
+				else if ((x >= size.x) || (y >= size.y)) {
 					newCells[(y * w) + x] = Cell(' ');
 				}
 				else {
