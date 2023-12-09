@@ -4,8 +4,9 @@ import std.stdio;
 import noro.types;
 import noro.uiManager;
 import noro.ui.window;
-import noro.terminal.screen;
 import noro.terminal.input;
+import noro.terminal.screen;
+import noro.programs.editor;
 
 enum AppStatus {
 	Standby,
@@ -24,9 +25,10 @@ class App {
 		screen  = new Screen();
 		ui      = new UIManager();
 
-		auto window = new UIWindow(100, 30);
-		window.pos  = Vec2!ushort(5, 5);
-		window.name = "Window!!";
+		auto window    = new UIWindow(100, 30);
+		window.pos     = Vec2!ushort(5, 5);
+		window.name    = "Window!!";
+		window.program = new EditorProgram();
 		ui.Add(window);
 
 		status = AppStatus.Standby;
@@ -55,7 +57,7 @@ class App {
 		buffer.SetFGColour(Colour16.Black);
 		buffer.HLine(0, 0, buffer.GetSize().x, ' ');
 		buffer.caret = Vec2!ushort(0, 0);
-		buffer.Printf("noro - %s", status);
+		buffer.Printf("noro π - %s", status);
 
 		// render UI
 		ui.Render(buffer);

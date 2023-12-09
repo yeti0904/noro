@@ -27,15 +27,16 @@ class UIWindow : UIBase {
 
 	override void Render(bool focused) {
 		buffer.Clear(' ');
+		
 		if (program) {
 			program.Render(contents);
 		}
-
+		
 		if (border) {
-			buffer.BlitBuffer(contents, 0, 0);
+			buffer.BlitBuffer(contents, 1, 1);
 		}
 		else {
-			buffer.BlitBuffer(contents, 1, 1);
+			buffer.BlitBuffer(contents, 0, 0);
 		}
 
 		dchar cornerUR = focused? Character.DCornerUR : Character.CornerUR;

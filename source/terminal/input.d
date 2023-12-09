@@ -7,6 +7,8 @@ import noro.binding;
 
 enum Key {
 	Null = 0,
+	// regular keys
+	Backspace = 127,
 	// VT sequences
 	Home = 1000000,
 	Insert,
@@ -66,7 +68,7 @@ struct KeyPress {
 	}
 
 	bool IsText() {
-		return (mod == 0) && (key < 1000000);
+		return (mod == 0) && (key < 1000000) && (key >= 32) && (key != 127);
 	}
 }
 
