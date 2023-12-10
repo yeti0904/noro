@@ -106,10 +106,10 @@ class PageProgram : Program {
 					break;
 				}
 				case Key.Down: {
-					if (caret < elements.length - 1) {
+					if (caret < elements.length) {
 						++ caret;
 
-						while (caret - scroll > bufSize.y - 1) {
+						while (caret - scroll > bufSize.y - 3) {
 							++ scroll;
 						}
 					}

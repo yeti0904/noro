@@ -22,6 +22,7 @@ class App {
 	UIManager ui;
 	AppStatus status;
 	KeyPress  key;
+	dchar     lastCommand;
 
 	this() {
 		running = true;
@@ -56,6 +57,8 @@ class App {
 		buffer.HLine(0, 0, buffer.GetSize().x, ' ');
 		buffer.caret = Vec2!ushort(0, 0);
 		buffer.Printf("noro π - %s", status);
+		buffer.caret = Vec2!ushort(cast(ushort) (buffer.GetSize().x - 2), 0);
+		buffer.Printf("%c", lastCommand);
 
 		// render UI
 		ui.Render(buffer);
@@ -84,6 +87,9 @@ class App {
 				break;
 			}
 			case AppStatus.Command: {
+				auto oldLastCommand = lastCommand;
+				lastCommand         = input.key;
+				
 				switch (input.key) {
 					case 'm': {
 						status = AppStatus.Window;
@@ -132,7 +138,8 @@ class App {
 						break;
 					}
 					default: {
-						status = AppStatus.Standby;
+						status      = AppStatus.Standby;
+						lastCommand = oldLastCommand;
 						break; // TODO: error
 					}
 				}
