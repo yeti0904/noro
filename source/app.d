@@ -19,6 +19,7 @@ class App {
 	Screen    screen;
 	UIManager ui;
 	AppStatus status;
+	KeyPress  key;
 
 	this() {
 		running = true;
@@ -66,6 +67,7 @@ class App {
 		screen.Render();
 
 		auto input = GetKey();
+		key = input;
 
 		if ((input.mod == KeyMod.Ctrl) && (input.key == 'q')) {
 			running = false;

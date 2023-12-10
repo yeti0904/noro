@@ -7,7 +7,7 @@ import noro.program;
 
 class EditorProgram : Program {
 	string[]    buffer;
-	Vec2!ushort caret;
+	Vec2!size_t caret;
 
 	this() {
 		buffer = [""];
@@ -26,21 +26,90 @@ class EditorProgram : Program {
 
 		if (key.mod == 0) {
 			switch (key.key) {
+				case '\n': {
+					if (caret.x < (cast(long) buffer[caret.y].length) - 1) {
+						buffer.insertInPlace(caret.y + 1, buffer[caret.y][caret.x .. $]);
+
+						auto line = cast(char[]) buffer[caret.y];
+						/*if (caret.x > 0) { // ?
+							buffer[caret.y] = cast(string) line.remove(caret.x);
+						}*/
+						buffer[caret.y] = buffer[caret.y][0 .. caret.x];
+					}
+					else {
+						buffer.insertInPlace(caret.y + 1, "");
+					}
+
+					++ caret.y;
+					caret.x = 0;
+					break;
+				}
+				case Key.Up: {
+					if (caret.y > 0) {
+						-- caret.y;
+						if (caret.x > buffer[caret.y].length) {
+							caret.x = buffer[caret.y].length;
+						}
+					}
+					else {
+						caret.x = 0;
+					}
+					break;
+				}
+				case Key.Down: {
+					if (caret.y < buffer.length - 1) {
+						++ caret.y;
+						if (caret.x > buffer[caret.y].length) {
+							caret.x = buffer[caret.y].length;
+						}
+					}
+					else {
+						caret.x = buffer[caret.y].length;
+					}
+					break;
+				}
 				case Key.Left: {
-					if (caret.x > 0) -- caret.x;
+					if (caret.x > 0) {
+						-- caret.x;
+					}
+					else if (caret.y > 0) {
+						-- caret.y;
+						caret.x = buffer[caret.y].length;
+					}
 					break;
 				}
 				case Key.Right: {
-					if (caret.x < buffer[caret.y].length - 1) ++ caret.x;
+					if (caret.x < buffer[caret.y].length) {
+						++ caret.x;
+					}
+					else if (
+						(caret.x >= buffer[caret.y].length) &&
+						(caret.y != buffer.length - 1)
+					) {
+						++ caret.y;
+						caret.x = 0;
+					}
 					break;
 				}
 				case Key.Backspace: {
-					-- caret.x;
-					auto line = cast(char[]) buffer[caret.y];
-					buffer[caret.y] = cast(string) line.remove(caret.x);
+					if (caret.x > 0) {
+						-- caret.x;
+						auto line = cast(char[]) buffer[caret.y];
+						buffer[caret.y] = cast(string) line.remove(caret.x);
+					}
+					else if (caret.y > 0) {
+						buffer[caret.y - 1] ~= buffer[caret.y];
+						auto lineSize = buffer[caret.y].length;
+						buffer = buffer.remove(caret.y);
+						-- caret.y;
+						caret.x = buffer[caret.y].length - lineSize;
+					}
 					break;
 				}
-				default: break;
+				default: {
+					import std.stdio : stderr, writeln;
+					stderr.writeln(key);
+				}
 			}
 		}
 	}
@@ -58,6 +127,6 @@ class EditorProgram : Program {
 			}
 		}
 
-		buf.caret = caret;
+		buf.caret = Vec2!ushort(cast(ushort) caret.x, cast(ushort) caret.y);
 	}
 }
