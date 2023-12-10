@@ -160,14 +160,33 @@ class Buffer {
 	}
 
 	void Print(dchar ch) {
-		if ((caret.x < size.x) && (caret.y < size.y)) {
-			cells[GetCaretIndex()] = Cell(ch, attr);
-		}
-		
-		++ caret.x;
-		if (caret.x >= size.x) {
-			++ caret.y;
-			caret.x = 0;
+		switch (ch) {
+			case '\n': {
+				++ caret.y;
+				caret.x = 0;
+				break;
+			}
+			case '\r': {
+				caret.x = 0;
+				break;
+			}
+			case '\t': {
+				foreach (i ; 0 .. 4) {
+					Print(' ');
+				}
+				break;
+			}
+			default: {
+				if ((caret.x < size.x) && (caret.y < size.y)) {
+					cells[GetCaretIndex()] = Cell(ch, attr);
+				}
+				
+				++ caret.x;
+				if (caret.x >= size.x) {
+					++ caret.y;
+					caret.x = 0;
+				}
+			}
 		}
 	}
 

@@ -12,20 +12,23 @@ class UIWindow : UIBase {
 	bool     border;
 
 	this(ushort w, ushort h) {
-		border   = true;
-		borderFG = Colour16.White;
-		borderBG = Colour16.Black;
-		buffer   = new Buffer(Vec2!ushort(w, h));
-		contents = new Buffer(Vec2!ushort(cast(ushort) (w - 2), cast(ushort) (h - 2)));
+		border    = true;
+		borderFG  = Colour16.White;
+		borderBG  = Colour16.Black;
+		buffer    = new Buffer(Vec2!ushort(w, h));
+		contents  = new Buffer(Vec2!ushort(cast(ushort) (w - 2), cast(ushort) (h - 2)));
+		resizable = true;
 	}
 
 	override void Update() {
 		if (program) {
+			program.parent = this;
 			program.Update();
 		}
 	}
 
 	override void Render(bool focused) {
+		program.parent = this;
 		buffer.Clear(' ');
 		
 		if (program) {
@@ -87,6 +90,7 @@ class UIWindow : UIBase {
 
 	override void Input(KeyPress key) {
 		if (program) {
+			program.parent = this;
 			program.Input(key);
 		}
 	}

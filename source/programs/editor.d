@@ -1,9 +1,13 @@
 module noro.programs.editor;
 
+import std.file;
 import std.array;
 import std.algorithm;
+import noro.app;
+import noro.util;
 import noro.types;
 import noro.program;
+import noro.ui.window;
 
 class EditorProgram : Program {
 	string[]    buffer;
@@ -106,10 +110,29 @@ class EditorProgram : Program {
 					}
 					break;
 				}
-				default: {
-					import std.stdio : stderr, writeln;
-					stderr.writeln(key);
+				default: break;
+			}
+		}
+		else if (key.mod == KeyMod.Ctrl) {
+			switch (key.key) {
+				case 's': {
+					CreateInputWindow("Save file", "Type a filename:", (string path) {
+						std.file.write(path, buffer.join("\n")); // TODO: error
+						
+						App.Instance().ui.DeleteTop();
+					});
+					break;
 				}
+				case 'o': {
+					CreateInputWindow("Open file", "Type a filename", (string path) {
+						buffer = readText(path).split("\n"); // TODO: error
+						caret  = Vec2!size_t(0, 0);
+
+						App.Instance().ui.DeleteTop();
+					});
+					break;
+				}
+				default: break; // TODO: error
 			}
 		}
 	}
@@ -123,10 +146,26 @@ class EditorProgram : Program {
 
 		foreach (y, ref line ; buffer) {
 			foreach (x, dchar ch ; line) {
-				buf.Print(cast(ushort) x, cast(ushort) y, ch);
+				// buf.Print(cast(ushort) x, cast(ushort) y, ch);
+				buf.Print(ch);
+			}
+			buf.Print('\n');
+		}
+
+		ushort caretX;
+
+		foreach (i, ref ch ; buffer[caret.y]) {
+			if (i >= caret.x) break;
+			
+			switch (ch) {
+				case '\t': {
+					caretX += 4;
+					break;
+				}
+				default: ++ caretX;
 			}
 		}
 
-		buf.caret = Vec2!ushort(cast(ushort) caret.x, cast(ushort) caret.y);
+		buf.caret = Vec2!ushort(caretX, cast(ushort) caret.y);
 	}
 }

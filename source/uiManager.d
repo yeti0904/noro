@@ -1,27 +1,31 @@
 module noro.uiManager;
 
+import std.range;
 import std.algorithm;
 import noro.ui.base;
 import noro.terminal.input;
 
 class UIManager {
 	UIBase[] elements;
-	UIBase   focused;
 
-	void SetFocused(size_t index) {
-		focused = elements[index];
+	void MoveTop(size_t index) {
+		auto elem  = elements[index];
+		elements   = elements.remove(index);
+		elements  ~= elem;
 	}
 
-	UIBase Focused() {
-		return focused;
+	UIBase Top() {
+		return elements[$ - 1];
 	}
 
 	void Add(UIBase element) {
 		elements ~= element;
+	}
 
-		if (elements.length == 1) {
-			focused = element;
-		}
+	void DeleteTop() {
+		if (elements.empty) return;
+		
+		elements = elements[0 .. $ - 1];
 	}
 
 	void Update() {
@@ -31,19 +35,23 @@ class UIManager {
 	}
 
 	void Input(KeyPress key) {
-		focused.Input(key);
+		if (elements.empty) return;
+		
+		Top().Input(key);
 	}
 
 	void Render(Buffer buf) {
 		foreach (ref elem ; elements) {
-			elem.Render(elem is focused);
+			elem.Render(elem is elements[$ - 1]);
 			buf.BlitBuffer(elem.buffer, elem.pos.x, elem.pos.y);
 		}
 	}
 
 	void SetCaret(Buffer buf) {
-		buf.caret    = focused.buffer.caret;
-		buf.caret.x += focused.pos.x;
-		buf.caret.y += focused.pos.y;
+		if (elements.empty) return;
+		
+		buf.caret    = Top().buffer.caret;
+		buf.caret.x += Top().pos.x;
+		buf.caret.y += Top().pos.y;
 	}
 }

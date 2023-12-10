@@ -1,12 +1,14 @@
 module noro.app;
 
 import std.stdio;
+import std.range;
 import noro.types;
 import noro.uiManager;
 import noro.ui.window;
+import noro.pages.menu;
+import noro.programs.page;
 import noro.terminal.input;
 import noro.terminal.screen;
-import noro.programs.editor;
 
 enum AppStatus {
 	Standby,
@@ -26,17 +28,11 @@ class App {
 		screen  = new Screen();
 		ui      = new UIManager();
 
-		auto window    = new UIWindow(100, 30);
-		window.pos     = Vec2!ushort(5, 5);
-		window.name    = "Window!!";
-		window.program = new EditorProgram();
-		ui.Add(window);
-
 		status = AppStatus.Standby;
 	}
 
 	static App Instance() {
-		App app;
+		static App app;
 
 		if (!app) {
 			app = new App();
@@ -51,9 +47,10 @@ class App {
 		
 		auto buffer = screen.buffer;
 		buffer.SetBGColour(Colour16.Blue);
+		buffer.SetFGColour(Colour16.BrightBlue);
 		buffer.Clear(' ');
 
-		// render Focused bar
+		// render top bar
 		buffer.SetBGColour(Colour16.White);
 		buffer.SetFGColour(Colour16.Black);
 		buffer.HLine(0, 0, buffer.GetSize().x, ' ');
@@ -63,6 +60,7 @@ class App {
 		// render UI
 		ui.Render(buffer);
 
+		buffer.caret = Vec2!ushort(buffer.GetSize().x, 0);
 		ui.SetCaret(buffer);
 		screen.Render();
 
@@ -92,23 +90,45 @@ class App {
 						break;
 					}
 					case 'f': {
-						ui.Focused().pos = Vec2!ushort(0, 1);
-						ui.Focused().Resize(
+						ui.Top().pos = Vec2!ushort(0, 1);
+						ui.Top().Resize(
 							buffer.GetSize().x, cast(ushort) (buffer.GetSize().y - 1)
 						);
 						break;
 					}
 					case 'F': {
-						ui.Focused().pos = Vec2!ushort(0, 0);
-						ui.Focused().Resize(buffer.GetSize().x, buffer.GetSize().y);
+						ui.Top().pos = Vec2!ushort(0, 0);
+						ui.Top().Resize(buffer.GetSize().x, buffer.GetSize().y);
 						break;
 					}
 					case 'b': {
-						if (!(cast(UIWindow) ui.Focused())) break;
+						if (!(cast(UIWindow) ui.Top())) break;
 
-						auto win   = cast(UIWindow) ui.Focused();
+						auto win   = cast(UIWindow) ui.Top();
 						win.border = !win.border;
 						win.Resize(win.GetSize().x, win.GetSize().y);
+						break;
+					}
+					case 'a': {
+						auto window    = new UIWindow(50, 20);
+						window.pos     = Vec2!ushort(0, 1);
+						window.name    = "Menu";
+						window.program = new PageProgram(MenuPage());
+						ui.Add(window);
+						break;
+					}
+					case 'q': {
+						if (ui.elements.empty) {
+							running = false;
+							return;
+						}
+						ui.DeleteTop();
+						break;
+					}
+					case Key.Tab: {
+						if (ui.elements.length < 2) break;
+
+						ui.MoveTop(0);
 						break;
 					}
 					default: {
@@ -131,86 +151,86 @@ class App {
 					}
 					case Key.Up: {
 						if (input.mod & KeyMod.Shift) {
-							-- ui.Focused().pos.y;
+							-- ui.Top().pos.y;
 						}
 						else {
-							ui.Focused().pos.y -= 4;
+							ui.Top().pos.y -= 4;
 						}
 						break;
 					}
 					case Key.Down: {
 						if (input.mod & KeyMod.Shift) {
-							++ ui.Focused().pos.y;
+							++ ui.Top().pos.y;
 						}
 						else {
-							ui.Focused().pos.y += 4;
+							ui.Top().pos.y += 4;
 						}
 						break;
 					}
 					case Key.Left: {
 						if (input.mod & KeyMod.Shift) {
-							-- ui.Focused().pos.x;
+							-- ui.Top().pos.x;
 						}
 						else {
-							ui.Focused().pos.x -= 4;
+							ui.Top().pos.x -= 4;
 						}
 						break;
 					}
 					case Key.Right: {
 						if (input.mod & KeyMod.Shift) {
-							++ ui.Focused().pos.x;
+							++ ui.Top().pos.x;
 						}
 						else {
-							ui.Focused().pos.x += 4;
+							ui.Top().pos.x += 4;
 						}
 						break;
 					}
 					case 'w': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						size.y -= 4;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'a': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						size.x -= 4;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					case 's': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						size.y += 4;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'd': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						size.x += 4;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'W': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						-- size.y;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'A': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						-- size.x;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'S': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						++ size.y;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'D': {
-						auto size = ui.Focused().GetSize();
+						auto size = ui.Top().GetSize();
 						++ size.x;
-						ui.Focused().Resize(size.x, size.y);
+						ui.Top().Resize(size.x, size.y);
 						break;
 					}
 					default: break; // TODO: error
