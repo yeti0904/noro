@@ -1,7 +1,10 @@
-# noro
+# <center>noro</center>
 ~~noro is a fully hackable system~~
 
-noro is a text editor which allows for multitasking
+noro is a text editor for the terminal that allows for multitasking (which is achieved
+using a window manager)
+
+it also doesn't use any third party libraries
 
 ![image](images/screenshot.png)
 
