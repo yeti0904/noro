@@ -1,5 +1,6 @@
 # noro
 ~~noro is a fully hackable system~~
+
 noro is a text editor which allows for multitasking
 
 ![image](images/screenshot.png)

@@ -12,9 +12,18 @@ import noro.ui.window;
 class EditorProgram : Program {
 	string[]    buffer;
 	Vec2!size_t caret;
+	Colour16    bg;
+	Colour16    fg;
 
 	this() {
 		buffer = [""];
+		bg     = Colour16.Black;
+		fg     = Colour16.White;
+	}
+
+	override void Init() {
+		parent.borderBG = bg;
+		parent.borderFG = fg;
 	}
 
 	override void Update() {
@@ -138,8 +147,8 @@ class EditorProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(Colour16.Black);
-		buf.SetFGColour(Colour16.White);
+		buf.SetBGColour(bg);
+		buf.SetFGColour(fg);
 		
 		buf.Clear(' ');
 		buf.caret = Vec2!ushort(0, 0);

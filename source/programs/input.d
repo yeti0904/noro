@@ -21,6 +21,11 @@ class InputProgram : Program {
 		onComplete = pfunc;
 	}
 
+	override void Init() {
+		parent.borderBG = Colour16.White;
+		parent.borderFG = Colour16.Black;
+	}
+
 	override void Update() {
 		
 	}

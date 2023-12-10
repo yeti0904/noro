@@ -11,6 +11,8 @@ class UIWindow : UIBase {
 	string   name;
 	bool     border;
 
+	private bool wasInit;
+
 	this(ushort w, ushort h) {
 		border    = true;
 		borderFG  = Colour16.White;
@@ -20,8 +22,17 @@ class UIWindow : UIBase {
 		resizable = true;
 	}
 
+	private void InitProgram() {
+		if (!wasInit) {
+			program.parent = this;
+			program.Init();
+			wasInit = true;
+		}
+	}
+
 	override void Update() {
 		if (program) {
+			InitProgram();
 			program.parent = this;
 			program.Update();
 		}
@@ -32,6 +43,7 @@ class UIWindow : UIBase {
 		buffer.Clear(' ');
 		
 		if (program) {
+			InitProgram();
 			program.Render(contents);
 		}
 		
@@ -90,6 +102,7 @@ class UIWindow : UIBase {
 
 	override void Input(KeyPress key) {
 		if (program) {
+			InitProgram();
 			program.parent = this;
 			program.Input(key);
 		}

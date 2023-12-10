@@ -17,7 +17,7 @@ Element[] MenuPage() {
 	ret ~= new LinkElement("Text editor", () {
 		auto app = App.Instance();
 
-		auto window    = new UIWindow(50, 30);
+		auto window    = new UIWindow(50, 25);
 		window.pos     = Vec2!ushort(0, 1);
 		window.name    = "Editor";
 		window.program = new EditorProgram();

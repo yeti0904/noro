@@ -77,6 +77,11 @@ class PageProgram : Program {
 		elements = pelements;
 	}
 
+	override void Init() {
+		parent.borderBG = Colour16.Black;
+		parent.borderFG = Colour16.White;
+	}
+
 	override void Update() {
 		
 	}
