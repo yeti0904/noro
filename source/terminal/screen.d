@@ -13,25 +13,18 @@ class Screen {
 	termios originalTermios;
 
 	this() {
-		termios term;
-		tcgetattr(0, &term);
-		tcgetattr(0, &originalTermios);
-	
+		Terminal.Init();
 		Terminal.SetAltBuffer(true);
+		Terminal.SetRawMode(true);
 		// Terminal.SetEcho(false);
-		term.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-		term.c_oflag &= ~(OPOST);
-		term.c_cflag |= (CS8);
-		term.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-		tcsetattr(0, TCSAFLUSH, &term);
   
 		buffer = new Buffer(Terminal.GetSize());
 	}
 
 	~this() {
 		Terminal.SetAltBuffer(false);
+		Terminal.SetRawMode(false);
 		// Terminal.SetEcho(true);
-		tcsetattr(0, TCSAFLUSH, &originalTermios);
 	}
 
 	void Render() {

@@ -5,5 +5,8 @@
 	"copyright": "Copyright © 2023, yeti0904",
 	"description": "A text editor",
 	"license": "MIT",
-	"name": "noro"
+	"name": "noro",
+	"dflags": [
+		"-J."
+	]
 }

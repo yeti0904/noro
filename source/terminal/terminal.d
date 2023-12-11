@@ -4,7 +4,13 @@ import std.stdio;
 import noro.types;
 import noro.binding;
 
+static termios originalTermios;
+
 class Terminal {
+	static void Init() {
+		tcgetattr(0, &originalTermios);
+	}
+
 	static Vec2!ushort GetSize() {
 		winsize winSize;
 		stdout.flush();
@@ -67,5 +73,20 @@ class Terminal {
 	static void SetTerminalTitle(string title) {
 		writef("\x1b]0;%s\007", title);
 		stdout.flush();
+	}
+
+	static void SetRawMode(bool on) {
+		if (on) {
+			termios term;
+			tcgetattr(0, &term);
+			term.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+			term.c_oflag &= ~(OPOST);
+			term.c_cflag |= (CS8);
+			term.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+			tcsetattr(0, TCSAFLUSH, &term);
+		}
+		else {
+			tcsetattr(0, TCSAFLUSH, &originalTermios);
+		}
 	}
 }

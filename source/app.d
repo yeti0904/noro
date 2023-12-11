@@ -1,35 +1,40 @@
 module noro.app;
 
+import std.conv;
+import std.array;
 import std.stdio;
 import std.range;
 import noro.types;
+import noro.config;
+import noro.command;
+import noro.commands;
+import noro.shortcuts;
 import noro.uiManager;
 import noro.ui.window;
 import noro.pages.menu;
 import noro.programs.page;
 import noro.terminal.input;
 import noro.terminal.screen;
+import noro.terminal.terminal;
 
 enum AppStatus {
 	Standby,
-	Command,
+	Shortcut,
 	Window
 }
 
 class App {
-	bool      running;
-	Screen    screen;
-	UIManager ui;
-	AppStatus status;
-	KeyPress  key;
-	dchar     lastCommand;
+	bool            running;
+	Screen          screen;
+	UIManager       ui;
+	AppStatus       status;
+	KeyPress        key;
+	dchar           lastCommand;
+	Command[string] commands;
+	Shortcut[]      shortcuts;
 
 	this() {
-		running = true;
-		screen  = new Screen();
-		ui      = new UIManager();
-
-		status = AppStatus.Standby;
+	
 	}
 
 	static App Instance() {
@@ -40,6 +45,43 @@ class App {
 		}
 
 		return app;
+	}
+
+	void Init() {
+		running = true;
+		status  = AppStatus.Standby;
+
+		commands = GetCommands();
+		Config();
+		
+		screen = new Screen();
+		ui     = new UIManager();
+	}
+
+	void RunCommand(string cmd) {
+		auto parts = SplitCommand(cmd);
+
+		if (parts.empty) return;
+		commands.RunCommand(parts[0], parts[1 .. $]);
+	}
+
+	bool IsShortcut(KeyPress key) {
+		foreach (ref sc ; shortcuts) {
+			if (sc.key == key) return true;
+		}
+
+		return false;
+	}
+
+	void RunShortcut(KeyPress key) {
+		foreach (ref sc ; shortcuts) {
+			if (sc.key == key) {
+				RunCommand(sc.cmd);
+				return;
+			}
+		}
+
+		assert(0);
 	}
 
 	void Update() {
@@ -78,7 +120,7 @@ class App {
 		final switch (status) {
 			case AppStatus.Standby: {
 				if ((input.mod == KeyMod.Ctrl) && (input.key == 'k')) {
-					status = AppStatus.Command;
+					status = AppStatus.Shortcut;
 				}
 				else {
 					ui.Input(input);
@@ -86,65 +128,18 @@ class App {
 
 				break;
 			}
-			case AppStatus.Command: {
+			case AppStatus.Shortcut: {
 				auto oldLastCommand = lastCommand;
 				lastCommand         = input.key;
-				
-				switch (input.key) {
-					case 'm': {
-						status = AppStatus.Window;
-						break;
-					}
-					case 'f': {
-						ui.Top().pos = Vec2!ushort(0, 1);
-						ui.Top().Resize(
-							buffer.GetSize().x, cast(ushort) (buffer.GetSize().y - 1)
-						);
-						break;
-					}
-					case 'F': {
-						ui.Top().pos = Vec2!ushort(0, 0);
-						ui.Top().Resize(buffer.GetSize().x, buffer.GetSize().y);
-						break;
-					}
-					case 'b': {
-						if (!(cast(UIWindow) ui.Top())) break;
 
-						auto win   = cast(UIWindow) ui.Top();
-						win.border = !win.border;
-						win.Resize(win.GetSize().x, win.GetSize().y);
-						break;
-					}
-					case 'a': {
-						auto window    = new UIWindow(50, 20);
-						window.pos     = Vec2!ushort(0, 1);
-						window.name    = "Menu";
-						window.program = new PageProgram(MenuPage());
-						ui.Add(window);
-						break;
-					}
-					case 'q': {
-						if (ui.elements.empty) {
-							running = false;
-							return;
-						}
-						ui.DeleteTop();
-						break;
-					}
-					case Key.Tab: {
-						if (ui.elements.length < 2) break;
-
-						ui.MoveTop(0);
-						break;
-					}
-					default: {
-						status      = AppStatus.Standby;
-						lastCommand = oldLastCommand;
-						break; // TODO: error
-					}
+				if (!IsShortcut(input)) {
+					// TODO: error on no shortcut
+					break;
 				}
 
-				if (status == AppStatus.Command) {
+				RunShortcut(input);
+
+				if (status == AppStatus.Shortcut) {
 					status = AppStatus.Standby;
 				}
 
@@ -250,9 +245,17 @@ class App {
 }
 
 void main() {
-	auto app = App.Instance();
+	try {
+		auto app = App.Instance();
+		app.Init();
 
-	while (app.running) {
-		app.Update();
+		while (app.running) {
+			app.Update();
+		}
+	}
+	catch (Exception e) {
+		Terminal.SetAltBuffer(false);
+		Terminal.SetRawMode(false);
+		stderr.writeln(text(e).replace("\n", "\r\n"));
 	}
 }
