@@ -21,7 +21,13 @@ void Config() {
 		exit(1);
 	}
 
-	string configFolder = format("%s/.config/noro", homeFolder);
+	string configFolder = format("%s/.config", homeFolder);
+
+	if (!exists(configFolder)) {
+		mkdir(configFolder);
+	}
+
+	configFolder ~= "/noro";
 
 	if (!exists(configFolder)) {
 		mkdir(configFolder);
