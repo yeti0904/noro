@@ -14,18 +14,22 @@ Element[] MenuPage() {
 	ret ~= new TextElement("Select a program from the list below");
 	ret ~= new TextElement("");
 
-	ret ~= new LinkElement("Text editor", () {
-		auto app = App.Instance();
+	ret ~= new LinkElement("Text editor", (PageProgram page) {
+		/*auto app = App.Instance();
 
 		auto window    = new UIWindow(50, 25);
 		window.pos     = Vec2!ushort(0, 1);
 		window.name    = "Editor";
 		window.program = new EditorProgram();
-		app.ui.Add(window);
+		app.ui.Add(window);*/
+
+		page.parent.program = new EditorProgram();
+		page.parent.wasInit = false;
+		page.parent.name    = "Editor";
 	});
 
-	ret ~= new LinkElement("Survival guide", () {
-		auto app = App.Instance();
+	ret ~= new LinkElement("Survival guide", (PageProgram page) {
+		/*auto app = App.Instance();
 
 		auto bufSize = app.screen.buffer.GetSize();
 
@@ -33,7 +37,11 @@ Element[] MenuPage() {
 		window.pos     = Vec2!ushort(0, 1);
 		window.name    = "Survival guide";
 		window.program = new PageProgram(SurvivalGuidePage());
-		app.ui.Add(window);
+		app.ui.Add(window);*/
+
+		page.parent.program = new PageProgram(SurvivalGuidePage());
+		page.parent.wasInit = false;
+		page.parent.name    = "Survival guide";
 	});
 
 	return ret;

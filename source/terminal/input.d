@@ -192,7 +192,7 @@ KeyPress GetKey() {
 					}
 					else if (isAlpha(ch)) {
 						numbers ~= parse!int(reading);
-						return KeyPress(XTermKey(ch), GetMod(numbers[1]));
+						return KeyPress(XTermKey(ch), GetMod(numbers[$ - 1]));
 					}
 					else {
 						reading ~= ch;

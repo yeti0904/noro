@@ -33,7 +33,7 @@ void Config() {
 		mkdir(configFolder);
 	}
 
-	string autoexecPath = format("%s/autoexec", configFolder);
+	string autoexecPath = format("%s/autoexec.noro", configFolder);
 
 	if (!exists(autoexecPath)) {
 		std.file.write(autoexecPath, defaultAutoexec);

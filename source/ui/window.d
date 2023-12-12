@@ -10,8 +10,7 @@ class UIWindow : UIBase {
 	Program  program;
 	string   name;
 	bool     border;
-
-	private bool wasInit;
+	bool     wasInit;
 
 	this(ushort w, ushort h) {
 		border    = true;

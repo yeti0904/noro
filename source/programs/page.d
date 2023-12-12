@@ -13,7 +13,7 @@ class Element {
 	ElementType type;
 
 	abstract void Render(Buffer buf);
-	abstract void OnClick();
+	abstract void OnClick(PageProgram page);
 }
 
 class TextElement : Element {
@@ -34,20 +34,21 @@ class TextElement : Element {
 		buf.Print(contents);
 	}
 
-	override void OnClick() {
+	override void OnClick(PageProgram page) {
 		
 	}
 }
 
 class LinkElement : Element {
-	string          text;
-	void function() onClick;
+	string text;
+	
+	void function(PageProgram page) onClick;
 
 	this() {
 		type = ElementType.Link;
 	}
 
-	this(string ptext, void function() ponClick) {
+	this(string ptext, void function(PageProgram page) ponClick) {
 		type    = ElementType.Text;
 		text    = ptext;
 		onClick = ponClick;
@@ -59,8 +60,8 @@ class LinkElement : Element {
 		buf.Print(text);
 	}
 
-	override void OnClick() {
-		onClick();
+	override void OnClick(PageProgram page) {
+		onClick(page);
 	}
 }
 
@@ -118,7 +119,7 @@ class PageProgram : Program {
 				case ' ': {
 					if (elements.empty) return;
 
-					elements[caret].OnClick();
+					elements[caret].OnClick(this);
 					break;
 				}
 				default: break;
