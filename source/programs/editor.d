@@ -14,6 +14,7 @@ class EditorProgram : Program {
 	Vec2!size_t caret;
 	Colour16    bg;
 	Colour16    fg;
+	Vec2!size_t scroll;
 
 	this() {
 		buffer = [""];
@@ -28,6 +29,20 @@ class EditorProgram : Program {
 
 	override void Update() {
 		
+	}
+
+	void ScrollUp() {
+		if (caret.y < scroll.y) {
+			scroll.y = caret.y;
+		}
+	}
+
+	void ScrollDown() {
+		auto bufSize = parent.contents.GetSize();
+
+		while (caret.y - scroll.y >= bufSize.y) {
+			++ scroll.y;
+		}
 	}
 
 	override void Input(KeyPress key) {
@@ -55,6 +70,7 @@ class EditorProgram : Program {
 
 					++ caret.y;
 					caret.x = 0;
+					ScrollDown();
 					break;
 				}
 				case Key.Up: {
@@ -63,6 +79,7 @@ class EditorProgram : Program {
 						if (caret.x > buffer[caret.y].length) {
 							caret.x = buffer[caret.y].length;
 						}
+						ScrollUp();
 					}
 					else {
 						caret.x = 0;
@@ -75,6 +92,7 @@ class EditorProgram : Program {
 						if (caret.x > buffer[caret.y].length) {
 							caret.x = buffer[caret.y].length;
 						}
+						ScrollDown();
 					}
 					else {
 						caret.x = buffer[caret.y].length;
@@ -115,6 +133,7 @@ class EditorProgram : Program {
 						auto lineSize = buffer[caret.y].length;
 						buffer = buffer.remove(caret.y);
 						-- caret.y;
+						ScrollUp();
 						caret.x = buffer[caret.y].length - lineSize;
 					}
 					break;
@@ -153,7 +172,7 @@ class EditorProgram : Program {
 		buf.Clear(' ');
 		buf.caret = Vec2!ushort(0, 0);
 
-		foreach (y, ref line ; buffer) {
+		foreach (y, ref line ; buffer[scroll.y .. $]) {
 			foreach (x, dchar ch ; line) {
 				// buf.Print(cast(ushort) x, cast(ushort) y, ch);
 				buf.Print(ch);
@@ -175,6 +194,6 @@ class EditorProgram : Program {
 			}
 		}
 
-		buf.caret = Vec2!ushort(caretX, cast(ushort) caret.y);
+		buf.caret = Vec2!ushort(caretX, cast(ushort) (caret.y - scroll.y));
 	}
 }
