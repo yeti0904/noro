@@ -12,7 +12,7 @@ import noro.terminal.buffer;
 void CreateInputWindow(string title, string msg, void delegate(string) func) {
 	auto app = App.Instance();
 
-	auto window     = new UIWindow(20, 5);
+	auto window     = new UIWindow(30, 7);
 	window.name     = title;
 	window.program  = new InputProgram(msg, func);
 	window.borderBG = Colour16.White;
