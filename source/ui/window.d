@@ -111,10 +111,14 @@ class UIWindow : UIBase {
 		buffer.Resize(w, h);
 
 		if (border) {
-			contents.Resize(w, h);
+			contents.Resize(cast(ushort) (w - 2), cast(ushort) (h - 2));
 		}
 		else {
-			contents.Resize(cast(ushort) (w - 2), cast(ushort) (h - 2));
+			contents.Resize(w, h);
+		}
+
+		if (program) {
+			program.OnResize(Vec2!ushort(w, h));
 		}
 	}
 

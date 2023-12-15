@@ -31,17 +31,15 @@ class EditorProgram : Program {
 		
 	}
 
-	void ScrollUp() {
-		if (caret.y < scroll.y) {
-			scroll.y = caret.y;
-		}
-	}
-
-	void ScrollDown() {
+	void Scroll() {
 		auto bufSize = parent.contents.GetSize();
 
 		while (caret.y - scroll.y >= bufSize.y) {
 			++ scroll.y;
+		}
+
+		if (caret.y < scroll.y) {
+			scroll.y = caret.y;
 		}
 	}
 
@@ -70,7 +68,7 @@ class EditorProgram : Program {
 
 					++ caret.y;
 					caret.x = 0;
-					ScrollDown();
+					Scroll();
 					break;
 				}
 				case Key.Up: {
@@ -79,7 +77,7 @@ class EditorProgram : Program {
 						if (caret.x > buffer[caret.y].length) {
 							caret.x = buffer[caret.y].length;
 						}
-						ScrollUp();
+						Scroll();
 					}
 					else {
 						caret.x = 0;
@@ -92,7 +90,7 @@ class EditorProgram : Program {
 						if (caret.x > buffer[caret.y].length) {
 							caret.x = buffer[caret.y].length;
 						}
-						ScrollDown();
+						Scroll();
 					}
 					else {
 						caret.x = buffer[caret.y].length;
@@ -133,7 +131,7 @@ class EditorProgram : Program {
 						auto lineSize = buffer[caret.y].length;
 						buffer = buffer.remove(caret.y);
 						-- caret.y;
-						ScrollUp();
+						Scroll();
 						caret.x = buffer[caret.y].length - lineSize;
 					}
 					break;
@@ -163,6 +161,10 @@ class EditorProgram : Program {
 				default: break; // TODO: error
 			}
 		}
+	}
+
+	override void OnResize(Vec2!ushort size) {
+		Scroll();
 	}
 
 	override void Render(Buffer buf) {

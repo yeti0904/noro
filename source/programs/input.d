@@ -31,17 +31,11 @@ class InputProgram : Program {
 		
 	}
 
-	void ScrollRight() {
+	void Scroll() {
 		auto bufSize = parent.contents.GetSize();
 
-		if (caret - scroll >= bufSize.x) ++ scroll;
-	}
-
-	void ScrollLeft() {
-		long scaret  = cast(long) caret;
-		long sscroll = cast(long) scroll;
-
-		if (scaret - sscroll < 0) -- scroll;
+		while (caret - scroll >= bufSize.x) ++ scroll;
+		if    (caret < scroll)              scroll = caret;
 	}
 
 	override void Input(KeyPress key) {
@@ -51,14 +45,14 @@ class InputProgram : Program {
 			case Key.Left: {
 				if (caret > 0) {
 					-- caret;
-					ScrollLeft();
+					Scroll();
 				}
 				break;
 			}
 			case Key.Right: {
 				if (caret < input.length) {
 					++ caret;
-					ScrollRight();
+					Scroll();
 				}
 				break;
 			}
@@ -67,7 +61,7 @@ class InputProgram : Program {
 
 				-- caret;
 				input = cast(string) (cast(char[]) input).remove(caret);
-				ScrollLeft();
+				Scroll();
 				break;
 			}
 			case '\n': {
@@ -79,9 +73,13 @@ class InputProgram : Program {
 				
 				input.insertInPlace(caret, key.key);
 				++ caret;
-				ScrollRight();
+				Scroll();
 			}
 		}
+	}
+
+	override void OnResize(Vec2!ushort size) {
+		Scroll();
 	}
 
 	override void Render(Buffer buf) {

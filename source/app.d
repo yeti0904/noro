@@ -134,6 +134,7 @@ class App {
 
 				if (!IsShortcut(input)) {
 					// TODO: error on no shortcut
+					status = AppStatus.Standby;
 					break;
 				}
 

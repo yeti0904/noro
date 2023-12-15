@@ -87,6 +87,16 @@ class PageProgram : Program {
 		
 	}
 
+	void Scroll() {
+		while (caret - scroll > parent.contents.GetSize().x - 3) { // TODO: do i need the - 3
+			++ scroll;
+		}
+	
+		if (caret < scroll) {
+			scroll = caret;
+		}
+	}
+
 	override void Input(KeyPress key) {
 		auto bufSize = parent.contents.GetSize();
 	
@@ -95,24 +105,14 @@ class PageProgram : Program {
 				case Key.Up: {
 					if (caret > 0) {
 						-- caret;
-
-						auto scaret  = cast(long) caret;
-						auto sscroll = cast(long) scroll;
-
-						while (scaret - sscroll < 0) {
-							-- scroll;
-							sscroll = cast(long) scroll;
-						}
+						Scroll();
 					}
 					break;
 				}
 				case Key.Down: {
 					if (caret < elements.length) {
 						++ caret;
-
-						while (caret - scroll > bufSize.y - 3) {
-							++ scroll;
-						}
+						Scroll();
 					}
 					break;
 				}
@@ -125,6 +125,10 @@ class PageProgram : Program {
 				default: break;
 			}
 		}
+	}
+
+	override void OnResize(Vec2!ushort size) {
+		Scroll();
 	}
 
 	override void Render(Buffer buf) {
