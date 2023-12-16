@@ -11,7 +11,7 @@ import core.stdc.stdlib;
 import noro.app;
 import noro.command;
 
-static string defaultAutoexec = cast(string) import("runtime/autoexec");
+static string defaultAutoexec = cast(string) import("runtime/autoexec.noro");
 
 void Config() {
 	string homeFolder = environment.get("HOME");

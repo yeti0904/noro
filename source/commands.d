@@ -8,6 +8,7 @@ import noro.shortcuts;
 import noro.ui.window;
 import noro.pages.menu;
 import noro.programs.page;
+import noro.programs.editor;
 
 private void WindowMode(App app, string[] args) {
 	app.status = AppStatus.Window;
@@ -65,6 +66,13 @@ private void NewShortcut(App app, string[] args) {
 	app.shortcuts ~= Shortcut(ParseKey(keys), cmd);
 }
 
+private void Editor(App app, string[] args) {
+	if (!(cast(UIWindow) app.ui.Top())) return;
+
+	auto win    = cast(UIWindow) app.ui.Top();
+	win.program = new EditorProgram();
+}
+
 Command[string] GetCommands() {
 	Command[string] ret;
 
@@ -76,6 +84,7 @@ Command[string] GetCommands() {
 	ret["close"]      = Command(&Close,       []);
 	ret["switch"]     = Command(&Switch,      []);
 	ret["shortcut"]   = Command(&NewShortcut, [ArgType.String, ArgType.String]);
+	ret["editor"]     = Command(&Editor,      []);
 
 	return ret;
 }
