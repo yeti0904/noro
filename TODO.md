@@ -11,6 +11,9 @@ Some things that need to be done with noro
 - [ ] Saving to previously used path
 - [ ] Configurable keybinds
 - [ ] Syntax highlighting (not sure how this will work)
+- [ ] Line numbers
+- [ ] Horizontal scrolling
+- [ ] LSP
 
 ## Window manager
 - [ ] Tiling

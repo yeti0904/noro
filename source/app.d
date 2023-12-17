@@ -32,9 +32,12 @@ class App {
 	dchar           lastCommand;
 	Command[string] commands;
 	Shortcut[]      shortcuts;
+	bool            shortcutsEnabled = true;
+
+	private bool init;
 
 	this() {
-	
+		
 	}
 
 	static App Instance() {
@@ -50,12 +53,11 @@ class App {
 	void Init() {
 		running = true;
 		status  = AppStatus.Standby;
+		screen  = new Screen();
+		ui      = new UIManager();
 
 		commands = GetCommands();
 		Config();
-		
-		screen = new Screen();
-		ui     = new UIManager();
 	}
 
 	void RunCommand(string cmd) {
@@ -119,7 +121,7 @@ class App {
 		
 		final switch (status) {
 			case AppStatus.Standby: {
-				if ((input.mod == KeyMod.Ctrl) && (input.key == 'k')) {
+				if (shortcutsEnabled && (input.mod == KeyMod.Ctrl) && (input.key == 'k')) {
 					status = AppStatus.Shortcut;
 				}
 				else {
@@ -257,6 +259,7 @@ void main() {
 	catch (Exception e) {
 		Terminal.SetAltBuffer(false);
 		Terminal.SetRawMode(false);
+		Terminal.SetEcho(true);
 		stderr.writeln(text(e).replace("\n", "\r\n"));
 	}
 }

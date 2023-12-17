@@ -10,6 +10,7 @@ import std.algorithm;
 import core.stdc.stdlib;
 import noro.app;
 import noro.command;
+import noro.terminal.terminal;
 
 static string defaultAutoexec = cast(string) import("runtime/autoexec.noro");
 
@@ -46,6 +47,9 @@ void Config() {
 			app.RunCommand(line);
 		}
 		catch (CommandException e) {
+			Terminal.SetAltBuffer(false);
+			Terminal.SetRawMode(false);
+			Terminal.SetEcho(true);
 			stderr.writefln("autoexec:%d: %s", i + 1, e.msg);
 			exit(1);
 		}
