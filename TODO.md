@@ -7,9 +7,10 @@ Some things that need to be done with noro
 
 ## Editor
 - [ ] Selection
-- [ ] Word cursor movement
+- [X] Word cursor movement
 - [ ] Saving to previously used path
 - [ ] Configurable keybinds
+- [ ] Syntax highlighting (not sure how this will work)
 
 ## Window manager
 - [ ] Tiling
