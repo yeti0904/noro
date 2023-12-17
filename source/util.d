@@ -50,3 +50,7 @@ KeyPress ParseKey(string str) {
 
 	return ret;
 }
+
+bool IsWordChar(dchar ch) {
+	return (ch == '_') || ch.isAlphaNum();
+}
