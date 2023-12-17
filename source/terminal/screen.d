@@ -3,6 +3,7 @@ module noro.terminal.screen;
 import std.stdio;
 import noro.types;
 import noro.binding;
+import noro.terminal.input;
 import noro.terminal.terminal;
 
 public import noro.terminal.buffer;
@@ -17,6 +18,8 @@ class Screen {
 		Terminal.SetAltBuffer(true);
 		Terminal.SetRawMode(true);
 		// Terminal.SetEcho(false);
+
+		SetInputBlocks(true);
   
 		buffer = new Buffer(Terminal.GetSize());
 	}

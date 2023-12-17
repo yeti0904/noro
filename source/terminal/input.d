@@ -75,6 +75,12 @@ struct KeyPress {
 	}
 }
 
+static private bool inputBlocks;
+
+void SetInputBlocks(bool on) {
+	inputBlocks = on;
+}
+
 char GetChar() {
 	termios oldInfo;
 	termios info;
@@ -82,12 +88,14 @@ char GetChar() {
 	tcgetattr(0, &oldInfo);
 	
 	info.c_lflag     &= ~ICANON;
-	info.c_cc[VMIN]   = 1;
+	info.c_cc[VMIN]   = inputBlocks? 1 : 0;
 	info.c_cc[VTIME]  = 0;
 	tcsetattr(0, TCSANOW, &info); 
 	
 	char input;
-	read(0, &input, 1);
+	if (read(0, &input, 1) < 0) {
+		return Key.Null;
+	}
 
 	tcsetattr(0, TCSANOW, &oldInfo);
 	return input;
@@ -136,6 +144,7 @@ KeyPress GetKey() {
 	}
 
 	switch (ch) {
+		case Key.Null:     return KeyPress(Key.Null, 0);
 		case '\x1b':       break;
 		case '\r':         return KeyPress('\n',    0);
 		case 9:            return KeyPress(Key.Tab, 0);
@@ -168,6 +177,9 @@ KeyPress GetKey() {
 		default:           return KeyPress(ch);
 	}
 
+	auto oldBlocks = inputBlocks;
+	SetInputBlocks(true);
+
 	NextChar();
 	switch (ch) {
 		case '\x1b': return KeyPress(Key.Escape);
@@ -192,6 +204,7 @@ KeyPress GetKey() {
 					}
 					else if (isAlpha(ch)) {
 						numbers ~= parse!int(reading);
+						SetInputBlocks(oldBlocks);
 						return KeyPress(XTermKey(ch), GetMod(numbers[$ - 1]));
 					}
 					else {
@@ -199,6 +212,7 @@ KeyPress GetKey() {
 					}
 				}
 
+				SetInputBlocks(oldBlocks);
 				if (numbers.length == 1) {
 					return KeyPress(VtKey(numbers[0] + 1000000));
 				}
@@ -210,12 +224,17 @@ KeyPress GetKey() {
 				}
 			}
 			else if (isAlpha(ch)) { // xterm sequence
+				SetInputBlocks(oldBlocks);
 				return KeyPress(XTermKey(ch));
 			}
 			else {
+				SetInputBlocks(oldBlocks);
 				return KeyPress(Key.Null);
 			}
 		}
-		default: return KeyPress(Key.Null);
+		default: {
+			SetInputBlocks(oldBlocks);
+			return KeyPress(Key.Null);
+		}
 	}
 }

@@ -8,7 +8,7 @@ Some things that need to be done with noro
 ## Editor
 - [ ] Selection
 - [X] Word cursor movement
-- [ ] Saving to previously used path
+- [X] Saving to previously used path
 - [ ] Configurable keybinds
 - [ ] Syntax highlighting (not sure how this will work)
 - [ ] Line numbers

@@ -4,6 +4,8 @@ import std.conv;
 import std.array;
 import std.stdio;
 import std.range;
+import std.format;
+import std.datetime.stopwatch;
 import noro.types;
 import noro.config;
 import noro.command;
@@ -23,6 +25,13 @@ enum AppStatus {
 	Window
 }
 
+struct Alert {
+	bool      active;
+	StopWatch sw;
+	int       activeTime; // seconds
+	string    contents;
+}
+
 class App {
 	bool            running;
 	Screen          screen;
@@ -33,6 +42,7 @@ class App {
 	Command[string] commands;
 	Shortcut[]      shortcuts;
 	bool            shortcutsEnabled = true;
+	Alert           alert;
 
 	private bool init;
 
@@ -55,6 +65,7 @@ class App {
 		status  = AppStatus.Standby;
 		screen  = new Screen();
 		ui      = new UIManager();
+		key     = KeyPress(' ', 0);
 
 		commands = GetCommands();
 		Config();
@@ -86,14 +97,36 @@ class App {
 		assert(0);
 	}
 
+	void NewAlert(string msg, int duration) {
+		alert = Alert(true, StopWatch(AutoStart.yes), duration, msg);
+	}
+
 	void Update() {
 		// update
 		ui.Update();
-		
+
 		auto buffer = screen.buffer;
 		buffer.SetBGColour(Colour16.Blue);
 		buffer.SetFGColour(Colour16.BrightBlue);
 		buffer.Clear(' ');
+		
+		// update alert
+		if (alert.active) {
+			if (alert.sw.peek.total!("seconds") > alert.activeTime) {
+				alert.active = false;
+			}
+			else {
+				string alertText = format("[ %s ]", alert.contents);
+
+				buffer.caret = Vec2!ushort(
+					cast(ushort) ((buffer.GetSize().x / 2) - (alertText.length / 2)),
+					cast(ushort) (buffer.GetSize().y / 2)
+				);
+				buffer.SetBGColour(Colour16.Green);
+				buffer.SetFGColour(Colour16.Black);
+				buffer.Print(alertText);
+			}
+		}
 
 		// render top bar
 		buffer.SetBGColour(Colour16.White);
@@ -112,6 +145,11 @@ class App {
 		screen.Render();
 
 		auto input = GetKey();
+
+		if (input.key == Key.Null) {
+			return;
+		}
+		
 		key = input;
 
 		if ((input.mod == KeyMod.Ctrl) && (input.key == 'q')) {

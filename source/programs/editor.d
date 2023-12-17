@@ -1,8 +1,11 @@
 module noro.programs.editor;
 
 import std.uni;
+import std.utf;
 import std.file;
+import std.path;
 import std.array;
+import std.format;
 import std.algorithm;
 import noro.app;
 import noro.util;
@@ -16,6 +19,7 @@ class EditorProgram : Program {
 	Colour16    bg;
 	Colour16    fg;
 	Vec2!size_t scroll;
+	string      fileName;
 
 	this() {
 		buffer = [""];
@@ -203,20 +207,59 @@ class EditorProgram : Program {
 		else if (key.mod == KeyMod.Ctrl) {
 			switch (key.key) {
 				case 's': {
-					CreateInputWindow("Save file", "Type a filename:", (string path) {
-						std.file.write(path, buffer.join("\n")); // TODO: error
-						
-						App.Instance().ui.DeleteTop();
-					});
+					if (!fileName.empty) {
+						// TODO: do this less slowly
+						std.file.write(fileName, buffer.join("\n"));
+						return;
+					}
+
+					CreateInputWindow(
+						cast(Program) this, "Save file", "Type a filename:",
+						(Program program, string path) {
+							auto app = App.Instance();
+							
+							try {
+								std.file.write(path, buffer.join("\n"));
+							}
+							catch (FileException) {
+								app.NewAlert("Failed to write file", 3);
+								return;
+							}
+
+							app.ui.DeleteTop();
+							app.NewAlert("Saved file", 3);
+
+							auto editor     = cast(EditorProgram) program;
+							editor.fileName = path;
+							editor.parent.name = format("Editor (%s)", baseName(path));
+						}
+					);
 					break;
 				}
 				case 'o': {
-					CreateInputWindow("Open file", "Type a filename", (string path) {
-						buffer = readText(path).split("\n"); // TODO: error
-						caret  = Vec2!size_t(0, 0);
+					CreateInputWindow(
+						cast(Program) this, "Open file", "Type a filename",
+						(Program program, string path) {
+							auto app = App.Instance();
+							
+							try {
+								buffer = readText(path).split("\n"); // TODO: faster
+							}
+							catch (FileException) {
+								app.NewAlert("Failed to open file", 3);
+								return;
+							}
+							catch (UTFException) {
+								app.NewAlert("UTF decoding error", 3);
+								return;
+							}
+							
+							caret  = Vec2!size_t(0, 0);
 
-						App.Instance().ui.DeleteTop();
-					});
+							app.ui.DeleteTop();
+							app.NewAlert("Opened file", 3);
+						}
+					);
 					break;
 				}
 				case Key.Left:  CursorWordLeft(); break;
@@ -249,7 +292,7 @@ class EditorProgram : Program {
 
 		foreach (i, ref ch ; buffer[caret.y]) {
 			if (i >= caret.x) break;
-			
+		
 			switch (ch) {
 				case '\t': {
 					caretX += 4;

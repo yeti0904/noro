@@ -6,20 +6,22 @@ import noro.types;
 import noro.program;
 
 class InputProgram : Program {
-	string msg;
-	string input;
-	size_t caret;
-	size_t scroll;
+	string  msg;
+	string  input;
+	size_t  caret;
+	size_t  scroll;
+	Program program;
 
-	void delegate(string) onComplete;
+	void delegate(Program, string) onComplete;
 
 	this(string pmsg) {
 		msg = pmsg;
 	}
 
-	this(string pmsg, void delegate(string) pfunc) {
+	this(string pmsg, void delegate(Program, string) pfunc, Program pprogram) {
 		msg        = pmsg;
 		onComplete = pfunc;
+		program    = pprogram;
 	}
 
 	override void Init() {
@@ -65,7 +67,7 @@ class InputProgram : Program {
 				break;
 			}
 			case '\n': {
-				onComplete(input);
+				onComplete(program, input);
 				break;
 			}
 			default: {
