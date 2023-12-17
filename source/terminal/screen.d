@@ -19,7 +19,7 @@ class Screen {
 		Terminal.SetRawMode(true);
 		// Terminal.SetEcho(false);
 
-		SetInputBlocks(true);
+		SetInputBlocks(false);
   
 		buffer = new Buffer(Terminal.GetSize());
 	}
@@ -27,7 +27,7 @@ class Screen {
 	~this() {
 		Terminal.SetAltBuffer(false);
 		Terminal.SetRawMode(false);
-		// Terminal.SetEcho(true);
+		Terminal.SetEcho(true);
 	}
 
 	void Render() {

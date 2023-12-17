@@ -92,8 +92,8 @@ char GetChar() {
 	info.c_cc[VTIME]  = 0;
 	tcsetattr(0, TCSANOW, &info); 
 	
-	char input;
-	if (read(0, &input, 1) < 0) {
+	char input = 0;
+	if (read(0, &input, 1) == 0) {
 		return Key.Null;
 	}
 
