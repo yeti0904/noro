@@ -6,6 +6,7 @@ import std.file;
 import std.path;
 import std.array;
 import std.format;
+import std.typecons;
 import std.algorithm;
 import noro.app;
 import noro.util;
@@ -20,6 +21,8 @@ class EditorProgram : Program {
 	ThemeColour colours;
 	Vec2!size_t scroll;
 	string      fileName;
+	Vec2!size_t selectionPos;
+	bool        selected;
 
 	this() {
 		buffer  = [""];
@@ -139,6 +142,80 @@ class EditorProgram : Program {
 		);
 	}
 
+	Vec2!size_t SelectionStart() {
+		if (caret.y > selectionPos.y) {
+			return selectionPos;
+		}
+		else if (caret.y == selectionPos.y) {
+			if (caret.x > selectionPos.x) {
+				return selectionPos;
+			}
+			else {
+				return caret;
+			}
+		}
+		else {
+			return caret;
+		}
+	}
+
+	Vec2!size_t SelectionEnd() {
+		return SelectionStart() == caret? selectionPos : caret;
+	}
+
+	void DeleteSelection() {
+		if (selected) {
+			auto selStart = SelectionStart();
+			auto selEnd   = SelectionEnd(); // selEnd more like bellEnd
+
+			if (selStart == selEnd) {
+				auto part1 = buffer[caret.y][0 .. selStart.x];
+				auto part2 = buffer[caret.y][selStart.x .. $];
+
+				buffer[caret.y]  = part1 ~ part2;
+				caret.x         += part1.length;
+			}
+			else {
+				buffer   = buffer.remove(tuple(selStart.y + 1, selEnd.y));
+				selEnd.y = selStart.y + 1;
+
+				auto part1 = buffer[selStart.y][0 .. selStart.x];
+				auto part2 = buffer[selEnd.y][selEnd.x .. $];
+
+				buffer = buffer.remove(selEnd.y);
+
+				caret.y         = selStart.y;
+				caret.x         = part1.length;
+				buffer[caret.y] = part1 ~ part2;
+			}
+
+			selected = false;
+		}
+	}
+
+	string[] SelectionContents() {
+		string[] contents;
+		auto     selStart = SelectionStart();
+		auto     selEnd   = SelectionEnd();
+
+		if (selStart.y == selEnd.y) {
+			contents ~= buffer[selStart.y][
+				selStart.x .. selStart.x + (selEnd.x - selStart.x)
+			];
+		}
+		else {
+			contents ~= buffer[selStart.y][selStart.x .. $];
+
+			for (size_t i = selStart.y; i < selEnd.y; ++ i) {
+				contents ~= buffer[i];
+			}
+
+			contents ~= buffer[selEnd.y][0 .. selEnd.x];
+		}
+
+		return contents;
+	}
+
 	override void Input(KeyPress key) {
 		if (key.IsText()) {
 			buffer[caret.y].insertInPlace(caret.x, key.key);
@@ -147,6 +224,8 @@ class EditorProgram : Program {
 		}
 
 		if (key.mod == 0) {
+			selected = false;
+			
 			switch (key.key) {
 				case '\n': {
 					if (caret.x < (cast(long) buffer[caret.y].length) - 1) {
@@ -202,7 +281,73 @@ class EditorProgram : Program {
 				default: break;
 			}
 		}
+		else if (key.mod == KeyMod.Shift) {
+			switch (key.key) {
+				case Key.Left: {
+					if (!selected) {
+						selected     = true;
+						selectionPos = caret;
+					}
+
+					CursorLeft();
+					break;
+				}
+				case Key.Right: {
+					if (!selected) {
+						selected     = true;
+						selectionPos = caret;
+					}
+
+					CursorRight();
+					break;
+				}
+				case Key.Up: {
+					if (!selected) {
+						selected     = true;
+						selectionPos = caret;
+					}
+
+					CursorUp();
+					break;
+				}
+				case Key.Down: {
+					if (!selected) {
+						selected     = true;
+						selectionPos = caret;
+					}
+
+					CursorDown();
+					break;
+				}
+				default: break;
+			}
+		}
+		else if (key.mod == (KeyMod.Ctrl | KeyMod.Shift)) {
+			switch (key.key) {
+				case Key.Left: {
+					if (!selected) {
+						selected     = true;
+						selectionPos = caret;
+					}
+
+					CursorWordLeft();
+					break;
+				}
+				case Key.Right: {
+					if (!selected) {
+						selected     = true;
+						selectionPos = caret;
+					}
+
+					CursorWordRight();
+					break;
+				}
+				default: break;
+			}
+		}
 		else if (key.mod == KeyMod.Ctrl) {
+			selected = false;
+			
 			switch (key.key) {
 				case 's': {
 					if (!fileName.empty) {
@@ -275,9 +420,29 @@ class EditorProgram : Program {
 		buf.Clear(' ');
 		buf.caret = Vec2!ushort(0, 0);
 
+		auto selStart = SelectionStart();
+		auto selEnd   = SelectionEnd();
+
+		bool inSelection;
+
 		foreach (y, ref line ; buffer[scroll.y .. $]) {
 			foreach (x, dchar ch ; line) {
 				// buf.Print(cast(ushort) x, cast(ushort) y, ch);
+
+				if (
+					selected && !inSelection && (x == selStart.x) && (y == selStart.y)
+				) {
+					inSelection = true;
+					swap(buf.attr.fg, buf.attr.bg);
+				}
+
+				if (
+					inSelection && (x == selEnd.x) && (y == selEnd.y)
+				) {
+					inSelection = false;
+					swap(buf.attr.fg, buf.attr.bg);
+				}
+				
 				buf.Print(ch);
 			}
 			buf.Print('\n');
