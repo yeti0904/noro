@@ -23,6 +23,7 @@ class EditorProgram : Program {
 	string      fileName;
 	Vec2!size_t selectionPos;
 	bool        selected;
+	string      clipboard;
 
 	this() {
 		buffer  = [""];
@@ -244,6 +245,12 @@ class EditorProgram : Program {
 		}
 	}
 
+	void InsertString(string str) {
+		foreach (dchar ch ; str) {
+			InsertChar(ch);
+		}
+	}
+
 	override void Input(KeyPress key) {
 		if (key.IsText()) {
 			InsertChar(key.key);
@@ -367,6 +374,14 @@ class EditorProgram : Program {
 			selected = false;
 			
 			switch (key.key) {
+				case 'c': {
+					clipboard = SelectionContents().join("\n");
+					break;
+				}
+				case 'v': {
+					InsertString(clipboard);
+					break;
+				}
 				case 's': {
 					if (!fileName.empty) {
 						// TODO: do this less slowly
