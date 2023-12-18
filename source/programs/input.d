@@ -2,6 +2,7 @@ module noro.programs.input;
 
 import std.array;
 import std.algorithm;
+import noro.app;
 import noro.types;
 import noro.program;
 
@@ -25,8 +26,8 @@ class InputProgram : Program {
 	}
 
 	override void Init() {
-		parent.borderBG = Colour16.White;
-		parent.borderFG = Colour16.Black;
+		parent.borderBG = &App.GetTheme().dialog.fg.byteColour;
+		parent.borderFG = &App.GetTheme().dialog.bg.byteColour;
 	}
 
 	override void Update() {
@@ -85,8 +86,8 @@ class InputProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(Colour16.White);
-		buf.SetFGColour(Colour16.Black);
+		buf.SetBGColour(cast(Colour16) App.GetTheme().dialog.fg.byteColour);
+		buf.SetFGColour(cast(Colour16) App.GetTheme().dialog.bg.byteColour);
 		buf.Clear(' ');
 
 		buf.caret = Vec2!ushort(0, 0);

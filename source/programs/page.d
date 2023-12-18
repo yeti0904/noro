@@ -1,6 +1,7 @@
 module noro.programs.page;
 
 import std.range;
+import noro.app;
 import noro.types;
 import noro.program;
 
@@ -79,16 +80,16 @@ class PageProgram : Program {
 	}
 
 	override void Init() {
-		parent.borderBG = Colour16.Black;
-		parent.borderFG = Colour16.White;
+		parent.borderBG = &App.GetTheme().window.fg.byteColour;
+		parent.borderFG = &App.GetTheme().window.bg.byteColour;
 	}
 
 	override void Update() {
 		
 	}
 
-	void Scroll() {
-		while (caret - scroll > parent.contents.GetSize().x - 3) { // TODO: do i need the - 3
+	void Scroll() { // TODO: completely broken!!
+		while (caret - scroll > parent.contents.GetSize().x) {
 			++ scroll;
 		}
 	
@@ -132,8 +133,8 @@ class PageProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(Colour16.Black);
-		buf.SetFGColour(Colour16.White);
+		buf.SetBGColour(cast(Colour16) App.GetTheme().window.fg.byteColour);
+		buf.SetFGColour(cast(Colour16) App.GetTheme().window.bg.byteColour);
 		buf.Clear(' ');
 		
 		buf.caret = Vec2!ushort(0, 0);

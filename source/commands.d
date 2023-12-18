@@ -1,7 +1,12 @@
 module noro.commands;
 
+import std.utf;
+import std.file;
+import std.json;
 import std.range;
+import std.format;
 import noro.util;
+import noro.theme;
 import noro.types;
 import noro.command;
 import noro.shortcuts;
@@ -79,6 +84,43 @@ private void DisableShortcuts(App app, string[] args) {
 	app.shortcutsEnabled = false;
 }
 
+private void SetTheme(App app, string[] args) {
+	auto path = Theme.Path(args[0]);
+
+	if (!exists(path)) {
+		app.NewAlert("No such theme exists", 3);
+		return;
+	}
+
+	JSONValue theme;
+
+	try {
+		theme = parseJSON(readText(path));
+	}
+	catch (JSONException e) {
+		app.NewAlert(format("JSON error: %s", e.msg), 3);
+		return;
+	}
+	catch (FileException e) {
+		app.NewAlert("Failed to read theme file", 3);
+		return;
+	}
+	catch (UTFException e) {
+		app.NewAlert("Theme file has invalid unicode", 3);
+		return;
+	}
+
+	app.theme.Load(theme);
+}
+
+private void RunCommand(App app, string[] args) {
+	CreateInputWindow(
+		null, "Command", "Type a command", (Program, string input) {
+			App.Instance().RunCommand(input);
+		}
+	);
+}
+
 Command[string] GetCommands() {
 	Command[string] ret;
 
@@ -92,6 +134,8 @@ Command[string] GetCommands() {
 	ret["shortcut"]      = Command(&NewShortcut,      [ArgType.String, ArgType.String]);
 	ret["editor"]        = Command(&Editor,           []);
 	ret["shortcuts_off"] = Command(&DisableShortcuts, []);
+	ret["theme"]         = Command(&SetTheme,         [ArgType.String]);
+	ret["command"]       = Command(&RunCommand,       []);
 
 	return ret;
 }

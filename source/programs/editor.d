@@ -16,15 +16,15 @@ import noro.ui.window;
 class EditorProgram : Program {
 	string[]    buffer;
 	Vec2!size_t caret;
-	Colour16    bg;
-	Colour16    fg;
+	ubyte*      bg;
+	ubyte*      fg;
 	Vec2!size_t scroll;
 	string      fileName;
 
 	this() {
 		buffer = [""];
-		bg     = Colour16.Black;
-		fg     = Colour16.White;
+		bg     = &App.GetTheme().window.fg.byteColour;
+		fg     = &App.GetTheme().window.bg.byteColour;
 	}
 
 	override void Init() {
@@ -274,8 +274,8 @@ class EditorProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(bg);
-		buf.SetFGColour(fg);
+		buf.SetBGColour(cast(Colour16) *bg);
+		buf.SetFGColour(cast(Colour16) *fg);
 		
 		buf.Clear(' ');
 		buf.caret = Vec2!ushort(0, 0);

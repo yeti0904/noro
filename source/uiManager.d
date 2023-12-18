@@ -48,7 +48,10 @@ class UIManager {
 	}
 
 	void SetCaret(Buffer buf) {
-		if (elements.empty) return;
+		if (elements.empty) {
+			buf.caret = Vec2!ushort(buf.GetSize().x, buf.GetSize().y);
+			return;
+		}
 		
 		buf.caret    = Top().buffer.caret;
 		buf.caret.x += Top().pos.x;
