@@ -5,6 +5,13 @@ import std.format;
 import std.process;
 import noro.terminal.buffer;
 
+enum ThemeColour {
+	Dialog,
+	Window,
+	Background,
+	TopBar
+}
+
 class ThemeException : Exception {
 	this(string msg, string file = __FILE__, size_t line = __LINE__) {
 		super(msg, file, line);
@@ -42,6 +49,15 @@ class Theme {
 			"brightcyan":    Colour16.BrightCyan,
 			"brightwhite":   Colour16.BrightWhite
 		];
+	}
+
+	Attr GetColour(ThemeColour colour) {
+		final switch (colour) {
+			case ThemeColour.Dialog:     return dialog;
+			case ThemeColour.Window:     return window;
+			case ThemeColour.Background: return background;
+			case ThemeColour.TopBar:     return topBar;
+		}
 	}
 
 	void Default() {

@@ -2,6 +2,7 @@ module noro.programs.page;
 
 import std.range;
 import noro.app;
+import noro.theme;
 import noro.types;
 import noro.program;
 
@@ -30,8 +31,7 @@ class TextElement : Element {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(Colour16.Black);
-		buf.SetFGColour(Colour16.White);
+		buf.attr = App.GetTheme().GetColour(ThemeColour.Window);
 		buf.Print(contents);
 	}
 
@@ -56,7 +56,7 @@ class LinkElement : Element {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(Colour16.Black);
+		buf.attr = App.GetTheme().GetColour(ThemeColour.Window);
 		buf.SetFGColour(Colour16.Blue);
 		buf.Print(text);
 	}
@@ -67,9 +67,10 @@ class LinkElement : Element {
 }
 
 class PageProgram : Program {
-	Element[] elements;
-	size_t    caret;
-	size_t    scroll;
+	Element[]   elements;
+	size_t      caret;
+	size_t      scroll;
+	ThemeColour colours;
 
 	this() {
 		
@@ -77,11 +78,11 @@ class PageProgram : Program {
 
 	this(Element[] pelements) {
 		elements = pelements;
+		colours  = ThemeColour.Window;
 	}
 
 	override void Init() {
-		parent.borderBG = &App.GetTheme().window.fg.byteColour;
-		parent.borderFG = &App.GetTheme().window.bg.byteColour;
+		parent.borderColour = colours;
 	}
 
 	override void Update() {
@@ -89,8 +90,12 @@ class PageProgram : Program {
 	}
 
 	void Scroll() { // TODO: completely broken!!
-		while (caret - scroll > parent.contents.GetSize().x) {
+		long scaret  = cast(long) caret; // carrot hahaha
+		long sscroll = cast(long) scroll;
+		while (scaret - sscroll > parent.contents.GetSize().y - 1) {
 			++ scroll;
+			scaret  = cast(long) caret;
+			sscroll = cast(long) scroll;
 		}
 	
 		if (caret < scroll) {
@@ -133,8 +138,7 @@ class PageProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(cast(Colour16) App.GetTheme().window.fg.byteColour);
-		buf.SetFGColour(cast(Colour16) App.GetTheme().window.bg.byteColour);
+		buf.attr = App.GetTheme().GetColour(colours);
 		buf.Clear(' ');
 		
 		buf.caret = Vec2!ushort(0, 0);

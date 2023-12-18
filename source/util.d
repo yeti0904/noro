@@ -5,6 +5,7 @@ import std.array;
 import std.format;
 import std.datetime;
 import noro.app;
+import noro.theme;
 import noro.types;
 import noro.program;
 import noro.ui.window;
@@ -17,11 +18,10 @@ void CreateInputWindow(
 ) {
 	auto app = App.Instance();
 
-	auto window            = new UIWindow(30, 7);
-	window.name            = title;
-	window.program         = new InputProgram(msg, func, program);
-	window.borderBG        = &App.GetTheme().dialog.fg.byteColour;
-	window.borderFG        = &App.GetTheme().dialog.bg.byteColour;
+	auto window         = new UIWindow(30, 7);
+	window.name         = title;
+	window.program      = new InputProgram(msg, func, program);
+	window.borderColour = ThemeColour.Dialog;
 	
 	window.pos = Vec2!ushort(
 		cast(ushort) ((app.screen.buffer.GetSize().x / 2) - (window.GetSize().x / 2)),
