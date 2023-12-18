@@ -217,31 +217,43 @@ class EditorProgram : Program {
 		return contents;
 	}
 
+	void InsertChar(dchar ch) {
+		switch (ch) {
+			case '\n': {
+				if (caret.x < (cast(long) buffer[caret.y].length) - 1) {
+					buffer.insertInPlace(caret.y + 1, buffer[caret.y][caret.x .. $]);
+
+					auto line = cast(char[]) buffer[caret.y];
+					/*if (caret.x > 0) { // ?
+						buffer[caret.y] = cast(string) line.remove(caret.x);
+					}*/
+					buffer[caret.y] = buffer[caret.y][0 .. caret.x];
+				}
+				else {
+					buffer.insertInPlace(caret.y + 1, "");
+				}
+
+				++ caret.y;
+				caret.x = 0;
+				break;
+			}
+			default: {
+				buffer[caret.y].insertInPlace(caret.x, ch);
+				++ caret.x;
+			}
+		}
+	}
+
 	override void Input(KeyPress key) {
 		if (key.IsText()) {
-			buffer[caret.y].insertInPlace(caret.x, key.key);
-			++ caret.x;
+			InsertChar(key.key);
 			return;
 		}
 
 		if (key.mod == 0) {
 			switch (key.key) {
 				case '\n': {
-					if (caret.x < (cast(long) buffer[caret.y].length) - 1) {
-						buffer.insertInPlace(caret.y + 1, buffer[caret.y][caret.x .. $]);
-
-						auto line = cast(char[]) buffer[caret.y];
-						/*if (caret.x > 0) { // ?
-							buffer[caret.y] = cast(string) line.remove(caret.x);
-						}*/
-						buffer[caret.y] = buffer[caret.y][0 .. caret.x];
-					}
-					else {
-						buffer.insertInPlace(caret.y + 1, "");
-					}
-
-					++ caret.y;
-					caret.x = 0;
+					InsertChar('\n');
 					Scroll();
 					break;
 				}

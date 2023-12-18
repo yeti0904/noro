@@ -4,6 +4,7 @@
 	<img src="https://img.shields.io/github/license/yeti0904/noro">
 	<img src="https://img.shields.io/github/issues/yeti0904/noro">
 	<img src="https://img.shields.io/github/issues-pr/yeti0904/noro">
+	[![justforfunnoreally.dev badge](https://img.shields.io/badge/justforfunnoreally-dev-9ff)](https://justforfunnoreally.dev)
 </p>
 
 noro is a text editor for the terminal that allows for multitasking (which is achieved
