@@ -160,7 +160,8 @@ class EditorProgram : Program {
 	}
 
 	Vec2!size_t SelectionEnd() {
-		return SelectionStart() == caret? selectionPos : caret;
+		return SelectionStart() == caret?
+			selectionPos : Vec2!size_t(caret.x, caret.y);
 	}
 
 	void DeleteSelection() {
@@ -168,12 +169,12 @@ class EditorProgram : Program {
 			auto selStart = SelectionStart();
 			auto selEnd   = SelectionEnd(); // selEnd more like bellEnd
 
-			if (selStart == selEnd) {
+			if (selStart.y == selEnd.y) {
 				auto part1 = buffer[caret.y][0 .. selStart.x];
-				auto part2 = buffer[caret.y][selStart.x .. $];
+				auto part2 = buffer[caret.y][selEnd.x + 1 .. $];
 
-				buffer[caret.y]  = part1 ~ part2;
-				caret.x         += part1.length;
+				buffer[caret.y] = part1 ~ part2;
+				caret.x         = part1.length;
 			}
 			else {
 				buffer   = buffer.remove(tuple(selStart.y + 1, selEnd.y));
@@ -224,8 +225,6 @@ class EditorProgram : Program {
 		}
 
 		if (key.mod == 0) {
-			selected = false;
-			
 			switch (key.key) {
 				case '\n': {
 					if (caret.x < (cast(long) buffer[caret.y].length) - 1) {
@@ -263,6 +262,11 @@ class EditorProgram : Program {
 					break;
 				}
 				case Key.Backspace: {
+					if (selected) {
+						DeleteSelection();
+						break;
+					}
+					
 					if (caret.x > 0) {
 						-- caret.x;
 						auto line = cast(char[]) buffer[caret.y];
@@ -280,6 +284,8 @@ class EditorProgram : Program {
 				}
 				default: break;
 			}
+			
+			selected = false;
 		}
 		else if (key.mod == KeyMod.Shift) {
 			switch (key.key) {
