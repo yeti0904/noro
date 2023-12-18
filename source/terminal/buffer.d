@@ -43,6 +43,14 @@ struct Attr {
 	Colour     fg;
 	Colour     bg;
 
+	static Attr NewColour16(Colour16 fg, Colour16 bg) {
+		Attr ret;
+		ret.mode          = ColourMode.Colour16;
+		ret.fg.byteColour = cast(ubyte) fg;
+		ret.bg.byteColour = cast(ubyte) bg;
+		return ret;
+	}
+
 	bool opEquals(Attr b) {
 		if (mode != b.mode) return false;
 

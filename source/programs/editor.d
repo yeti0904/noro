@@ -9,6 +9,7 @@ import std.format;
 import std.algorithm;
 import noro.app;
 import noro.util;
+import noro.theme;
 import noro.types;
 import noro.program;
 import noro.ui.window;
@@ -16,20 +17,17 @@ import noro.ui.window;
 class EditorProgram : Program {
 	string[]    buffer;
 	Vec2!size_t caret;
-	Colour16    bg;
-	Colour16    fg;
+	ThemeColour colours;
 	Vec2!size_t scroll;
 	string      fileName;
 
 	this() {
-		buffer = [""];
-		bg     = Colour16.Black;
-		fg     = Colour16.White;
+		buffer  = [""];
+		colours = ThemeColour.Window;
 	}
 
 	override void Init() {
-		parent.borderBG = bg;
-		parent.borderFG = fg;
+		parent.borderColour = colours;
 	}
 
 	override void Update() {
@@ -226,7 +224,6 @@ class EditorProgram : Program {
 								return;
 							}
 
-							app.ui.DeleteTop();
 							app.NewAlert("Saved file", 3);
 
 							auto editor     = cast(EditorProgram) program;
@@ -256,7 +253,6 @@ class EditorProgram : Program {
 							
 							caret  = Vec2!size_t(0, 0);
 
-							app.ui.DeleteTop();
 							app.NewAlert("Opened file", 3);
 						}
 					);
@@ -274,8 +270,7 @@ class EditorProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(bg);
-		buf.SetFGColour(fg);
+		buf.attr = App.GetTheme().GetColour(colours);
 		
 		buf.Clear(' ');
 		buf.caret = Vec2!ushort(0, 0);

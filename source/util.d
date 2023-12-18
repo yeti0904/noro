@@ -2,7 +2,10 @@ module noro.util;
 
 import std.uni;
 import std.array;
+import std.format;
+import std.datetime;
 import noro.app;
+import noro.theme;
 import noro.types;
 import noro.program;
 import noro.ui.window;
@@ -15,11 +18,10 @@ void CreateInputWindow(
 ) {
 	auto app = App.Instance();
 
-	auto window            = new UIWindow(30, 7);
-	window.name            = title;
-	window.program         = new InputProgram(msg, func, program);
-	window.borderBG        = Colour16.White;
-	window.borderFG        = Colour16.Black;
+	auto window         = new UIWindow(30, 7);
+	window.name         = title;
+	window.program      = new InputProgram(msg, func, program);
+	window.borderColour = ThemeColour.Dialog;
 	
 	window.pos = Vec2!ushort(
 		cast(ushort) ((app.screen.buffer.GetSize().x / 2) - (window.GetSize().x / 2)),
@@ -56,4 +58,10 @@ KeyPress ParseKey(string str) {
 
 bool IsWordChar(dchar ch) {
 	return (ch == '_') || ch.isAlphaNum();
+}
+
+string ClockString() {
+	auto time = Clock.currTime();
+
+	return format("%.2d:%.2d:%.2d", time.hour, time.minute, time.second);
 }

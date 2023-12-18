@@ -12,7 +12,18 @@ import noro.app;
 import noro.command;
 import noro.terminal.terminal;
 
-static string defaultAutoexec = cast(string) import("runtime/autoexec.noro");
+static private string defaultAutoexec = cast(string) import("runtime/autoexec.noro");
+
+// themes
+struct ThemePair {
+	string path;
+	string contents;
+}
+
+static private const ThemePair[] themes = [
+	ThemePair("%s/default.json", cast(string) import("runtime/themes/default.json")),
+	ThemePair("%s/light.json", cast(string) import("runtime/themes/light.json"))
+];
 
 void Config() {
 	string homeFolder = environment.get("HOME");
@@ -32,6 +43,20 @@ void Config() {
 
 	if (!exists(configFolder)) {
 		mkdir(configFolder);
+	}	
+
+	string themesFolder = format("%s/themes", configFolder);
+
+	if (!exists(themesFolder)) {
+		mkdir(themesFolder);
+	}
+
+	foreach (theme ; themes) {
+		auto path = format(theme.path, themesFolder);
+
+		if (!exists(path)) {
+			std.file.write(path, theme.contents);
+		}
 	}
 
 	string autoexecPath = format("%s/autoexec.noro", configFolder);

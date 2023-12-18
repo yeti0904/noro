@@ -69,6 +69,7 @@ Here's a list of them with what parameters they take:
 - shortcut <keys> <cmd> - Defines a new shortcut with the given keys and command
 - shortcuts_off         - Disables the shortcut key
 - editor                - Opens the text editor in the current window
+- theme <theme name>    - Sets the current theme (more info on themes later)
 
 These commands can help to customise how noro is too
 For example, you could add the following lines to your autoexec.noro to enable minimal
@@ -81,3 +82,42 @@ fullscreen
 shortcuts_off
 ```
 This leaves you with just the editor in fullscreen, with no way to run anything else
+
+
+Noro's colours are (for the most part) customisable
+You can customise these colours using theme files, which are stored in
+~/.config/noro/themes
+Themes are JSON files containing definitions for each part of the colourscheme
+For example, you set the dialog background like this:
+```
+{
+	"dialogBG": "white"
+}
+```
+Here is a list of each property you can set:
+- windowFG (for regular windows like the editor or pages)
+- windowBG
+- dialogFG (for stuff like open/save dialog)
+- dialogBG
+- background (desktop background colour)
+- topbarFG (colour of the top bar)
+- topbarBG
+
+And a list of each colour:
+- black
+- red
+- green
+- yellow
+- blue
+- magenta
+- cyan
+- white
+- default
+- grey/brightblack
+- brightred
+- brightgreen
+- brightyellow
+- brightblue
+- brightmagenta
+- brightcyan
+- brightwhite

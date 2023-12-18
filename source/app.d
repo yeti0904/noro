@@ -6,6 +6,8 @@ import std.stdio;
 import std.range;
 import std.format;
 import std.datetime.stopwatch;
+import noro.util;
+import noro.theme;
 import noro.types;
 import noro.config;
 import noro.command;
@@ -43,6 +45,7 @@ class App {
 	Shortcut[]      shortcuts;
 	bool            shortcutsEnabled = true;
 	Alert           alert;
+	Theme           theme;
 
 	private bool init;
 
@@ -60,12 +63,17 @@ class App {
 		return app;
 	}
 
+	static Theme GetTheme() {
+		return App.Instance().theme;
+	}
+
 	void Init() {
 		running = true;
 		status  = AppStatus.Standby;
 		screen  = new Screen();
 		ui      = new UIManager();
 		key     = KeyPress(' ', 0);
+		theme   = new Theme();
 
 		commands = GetCommands();
 		Config();
@@ -134,8 +142,14 @@ class App {
 		buffer.HLine(0, 0, buffer.GetSize().x, ' ');
 		buffer.caret = Vec2!ushort(0, 0);
 		buffer.Printf("noro π - %s", status);
-		buffer.caret = Vec2!ushort(cast(ushort) (buffer.GetSize().x - 2), 0);
-		buffer.Printf("%c", lastCommand);
+
+		string clock = ClockString();
+		buffer.caret = Vec2!ushort(
+			cast(ushort) (buffer.GetSize().x - clock.length - 1), 0
+		);
+		buffer.Print(clock);
+
+		buffer.caret = Vec2!ushort(0, 0);
 
 		// render UI
 		ui.Render(buffer);

@@ -2,15 +2,18 @@ module noro.programs.input;
 
 import std.array;
 import std.algorithm;
+import noro.app;
 import noro.types;
+import noro.theme;
 import noro.program;
 
 class InputProgram : Program {
-	string  msg;
-	string  input;
-	size_t  caret;
-	size_t  scroll;
-	Program program;
+	string      msg;
+	string      input;
+	size_t      caret;
+	size_t      scroll;
+	Program     program;
+	ThemeColour colours;
 
 	void delegate(Program, string) onComplete;
 
@@ -22,11 +25,11 @@ class InputProgram : Program {
 		msg        = pmsg;
 		onComplete = pfunc;
 		program    = pprogram;
+		colours    = ThemeColour.Dialog;
 	}
 
 	override void Init() {
-		parent.borderBG = Colour16.White;
-		parent.borderFG = Colour16.Black;
+		parent.borderColour = colours;
 	}
 
 	override void Update() {
@@ -68,6 +71,7 @@ class InputProgram : Program {
 			}
 			case '\n': {
 				onComplete(program, input);
+				App.Instance().ui.DeleteTop(); // TODO: make this safer (can cause bugs)
 				break;
 			}
 			default: {
@@ -85,8 +89,7 @@ class InputProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
-		buf.SetBGColour(Colour16.White);
-		buf.SetFGColour(Colour16.Black);
+		buf.attr = App.GetTheme().GetColour(colours);
 		buf.Clear(' ');
 
 		buf.caret = Vec2!ushort(0, 0);
@@ -95,7 +98,7 @@ class InputProgram : Program {
 
 		auto inputLine = buf.caret.y;
 
-		buf.SetBGColour(Colour16.Black);
+		buf.SetBGColour(Colour16.Black); // TODO: make this customisable
 		buf.SetFGColour(Colour16.White);
 		buf.HLine(0, buf.caret.y, buf.GetSize().x, ' ');
 

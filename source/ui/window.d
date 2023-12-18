@@ -1,24 +1,24 @@
 module noro.ui.window;
 
+import noro.app;
+import noro.theme;
 import noro.program;
 import noro.ui.base;
 
 class UIWindow : UIBase {
-	Colour16 borderFG;
-	Colour16 borderBG;
-	Buffer   contents;
-	Program  program;
-	string   name;
-	bool     border;
-	bool     wasInit;
+	ThemeColour borderColour;
+	Buffer      contents;
+	Program     program;
+	string      name;
+	bool        border;
+	bool        wasInit;
 
 	this(ushort w, ushort h) {
-		border    = true;
-		borderFG  = Colour16.White;
-		borderBG  = Colour16.Black;
-		buffer    = new Buffer(Vec2!ushort(w, h));
-		contents  = new Buffer(Vec2!ushort(cast(ushort) (w - 2), cast(ushort) (h - 2)));
-		resizable = true;
+		border       = true;
+		borderColour = ThemeColour.Window;
+		buffer       = new Buffer(Vec2!ushort(w, h));
+		contents     = new Buffer(Vec2!ushort(cast(ushort) (w - 2), cast(ushort) (h - 2)));
+		resizable    = true;
 	}
 
 	private void InitProgram() {
@@ -66,8 +66,7 @@ class UIWindow : UIBase {
 			return;
 		}
 		
-		buffer.SetBGColour(borderBG);
-		buffer.SetFGColour(borderFG);
+		buffer.attr = App.GetTheme().GetColour(borderColour);
 		buffer.Print(0, 0, cornerUL);
 		buffer.Print(cast(ushort) (buffer.GetSize().x - 1), 0, cornerUR);
 		buffer.Print(0, cast(ushort) (buffer.GetSize().y - 1), cornerLL);
