@@ -1,5 +1,10 @@
-# <center>noro</center>
-~~noro is a fully hackable system~~
+<h1 align="center">noro</h1>
+
+<p align="center">
+	<img src="https://img.shields.io/github/license/yeti0904/noro">
+	<img src="https://img.shields.io/github/issues/yeti0904/noro">
+	<img src="https://img.shields.io/github/issues-pr/yeti0904/noro">
+</p>
 
 noro is a text editor for the terminal that allows for multitasking (which is achieved
 using a window manager)
