@@ -371,8 +371,8 @@ class EditorProgram : Program {
 
 							app.NewAlert("Saved file", 3);
 
-							auto editor     = cast(EditorProgram) program;
-							editor.fileName = path;
+							auto editor        = cast(EditorProgram) program;
+							editor.fileName    = path;
 							editor.parent.name = format("Editor (%s)", baseName(path));
 						}
 					);
@@ -399,6 +399,10 @@ class EditorProgram : Program {
 							caret  = Vec2!size_t(0, 0);
 
 							app.NewAlert("Opened file", 3);
+
+							auto editor        = cast(EditorProgram) program;
+							editor.fileName    = path;
+							editor.parent.name = format("Editor (%s)", baseName(path));
 						}
 					);
 					break;
@@ -425,27 +429,32 @@ class EditorProgram : Program {
 
 		bool inSelection;
 
+		void InSelection(size_t x, size_t y) {
+			if (
+				selected && !inSelection && (x == selStart.x) && (y == selStart.y)
+			) {
+				inSelection = true;
+				swap(buf.attr.fg, buf.attr.bg);
+			}
+
+			if (
+				inSelection && (x == selEnd.x) && (y == selEnd.y)
+			) {
+				inSelection = false;
+				swap(buf.attr.fg, buf.attr.bg);
+			}
+		}
+
 		foreach (y, ref line ; buffer[scroll.y .. $]) {
+			InSelection(0, y);
+			
 			foreach (x, dchar ch ; line) {
 				// buf.Print(cast(ushort) x, cast(ushort) y, ch);
 
-				if (
-					selected && !inSelection && (x == selStart.x) && (y == selStart.y)
-				) {
-					inSelection = true;
-					swap(buf.attr.fg, buf.attr.bg);
-				}
-
-				if (
-					inSelection && (x == selEnd.x) && (y == selEnd.y)
-				) {
-					inSelection = false;
-					swap(buf.attr.fg, buf.attr.bg);
-				}
-				
+				InSelection(x, y);
 				buf.Print(ch);
 			}
-			buf.Print('\n');
+			buf.Print(" \n");
 		}
 
 		ushort caretX;
