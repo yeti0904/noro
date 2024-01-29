@@ -251,6 +251,28 @@ class EditorProgram : Program {
 		}
 	}
 
+	void OpenFile(string path) {
+		auto app = App.Instance();
+		
+		try {
+			buffer = readText(path).split("\n"); // TODO: faster
+		}
+		catch (FileException) {
+			app.NewAlert("Failed to open file", 3);
+			return;
+		}
+		catch (UTFException) {
+			app.NewAlert("UTF decoding error", 3);
+			return;
+		}
+		
+		caret = Vec2!size_t(0, 0);
+
+		app.NewAlert("Opened file", 3);
+		fileName    = path;
+		parent.name = format("Editor (%s)", baseName(path));
+	}
+
 	override void Input(KeyPress key) {
 		if (key.IsText()) {
 			InsertChar(key.key);
@@ -415,27 +437,8 @@ class EditorProgram : Program {
 					CreateInputWindow(
 						cast(Program) this, "Open file", "Type a filename",
 						(Program program, string path) {
-							auto app = App.Instance();
-							
-							try {
-								buffer = readText(path).split("\n"); // TODO: faster
-							}
-							catch (FileException) {
-								app.NewAlert("Failed to open file", 3);
-								return;
-							}
-							catch (UTFException) {
-								app.NewAlert("UTF decoding error", 3);
-								return;
-							}
-							
-							caret  = Vec2!size_t(0, 0);
-
-							app.NewAlert("Opened file", 3);
-
-							auto editor        = cast(EditorProgram) program;
-							editor.fileName    = path;
-							editor.parent.name = format("Editor (%s)", baseName(path));
+							auto editor = cast(EditorProgram) program;
+							editor.OpenFile(path);
 						}
 					);
 					break;

@@ -4,6 +4,7 @@ import noro.app;
 import noro.types;
 import noro.ui.window;
 import noro.programs.page;
+import noro.programs.files;
 import noro.programs.editor;
 import noro.pages.survivalGuide;
 
@@ -26,6 +27,12 @@ Element[] MenuPage() {
 		page.parent.program = new EditorProgram();
 		page.parent.wasInit = false;
 		page.parent.name    = "Editor";
+	});
+
+	ret ~= new LinkElement("File manager", (PageProgram page) {
+		page.parent.program = new FilesProgram();
+		page.parent.wasInit = false;
+		page.parent.name    = "Files";
 	});
 
 	ret ~= new LinkElement("Survival guide", (PageProgram page) {
