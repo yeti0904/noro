@@ -3,7 +3,6 @@ module noro.util;
 import std.uni;
 import std.array;
 import std.format;
-import std.process;
 import std.datetime;
 import noro.app;
 import noro.theme;
@@ -65,17 +64,4 @@ string ClockString() {
 	auto time = Clock.currTime();
 
 	return format("%.2d:%.2d:%.2d", time.hour, time.minute, time.second);
-}
-
-string GetClipboard(bool* success) {
-	// xclip -o -selection clipboard
-
-	auto res = executeShell("xclip -o -selection clipboard");
-
-	if (res.status != 0) {
-		*success = false;
-		return "";
-	}
-
-	return res.output;
 }
