@@ -12,6 +12,7 @@ import noro.ui.window;
 import noro.programs.input;
 import noro.terminal.input;
 import noro.terminal.buffer;
+import noro.programs.selection;
 
 void CreateInputWindow(
 	Program program, string title, string msg, void delegate(Program, string) func
@@ -21,6 +22,25 @@ void CreateInputWindow(
 	auto window         = new UIWindow(30, 7);
 	window.name         = title;
 	window.program      = new InputProgram(msg, func, program);
+	window.borderColour = ThemeColour.Dialog;
+	
+	window.pos = Vec2!ushort(
+		cast(ushort) ((app.screen.buffer.GetSize().x / 2) - (window.GetSize().x / 2)),
+		cast(ushort) ((app.screen.buffer.GetSize().y / 2) - (window.GetSize().y / 2))
+	);
+
+	app.ui.Add(window);
+}
+
+void CreateSelectionWindow(
+	Program program, string title, string msg, string[] options,
+	void delegate(Program, string) func
+) {
+	auto app = App.Instance();
+
+	auto window         = new UIWindow(30, 7);
+	window.name         = title;
+	window.program      = new SelectionProgram(msg, options, func, program);
 	window.borderColour = ThemeColour.Dialog;
 	
 	window.pos = Vec2!ushort(

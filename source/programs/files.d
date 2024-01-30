@@ -3,6 +3,7 @@ module noro.programs.files;
 import std.file;
 import std.path;
 import std.range;
+import std.format;
 import std.algorithm;
 import noro.app;
 import noro.util;
@@ -110,6 +111,34 @@ class FilesProgram : Program {
 						folder = buildNormalizedPath(file.name);
 						UpdateFiles();
 					}
+					break;
+				}
+				case 'd': {
+					// i hope god forgives me for this atrocity
+					CreateSelectionWindow(
+						this, "Delete file",
+						format("Delete '%s'?", files[caret].name.baseName()),
+						["No", "Yes"], (Program, string option) {
+							final switch (option) {
+								case "Yes": {
+									try {
+										remove(files[caret].name);
+									}
+									catch (FileException e) {
+										App.Instance().NewAlert(e.msg, 3);
+										return;
+									}
+
+									files = files.remove(caret);
+									if (caret >= files.length) {
+										caret = files.length - 1;
+									}
+									break;
+								}
+								case "No": break;
+							}
+						}
+					);
 					break;
 				}
 				default: break;

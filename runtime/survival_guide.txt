@@ -56,7 +56,6 @@ As for the keys you can add any of these:
 - tab       - tab key
 - backspace - backspace key
 
-
 Noro has commands which (for now) can only be executed through shortcuts
 Here's a list of them with what parameters they take:
 - window                - Switches the editor to window mode
@@ -68,8 +67,9 @@ Here's a list of them with what parameters they take:
 - switch                - Moves the bottom window to the top
 - shortcut <keys> <cmd> - Defines a new shortcut with the given keys and command
 - shortcuts_off         - Disables the shortcut key
-- editor                - Opens the text editor in the current window
+- editor                - Opens the text editor in the current window (explained later)
 - theme <theme name>    - Sets the current theme (more info on themes later)
+- files                 - Opens the file manager in the current window (explained later)
 
 These commands can help to customise how noro is too
 For example, you could add the following lines to your autoexec.noro to enable minimal
@@ -121,3 +121,22 @@ And a list of each colour:
 - brightmagenta
 - brightcyan
 - brightwhite
+
+Text editor
+===========
+The text editor is noro's main purpose, and it can be opened with the `editor` command
+
+Keybinds:
+- Ctrl + S     : Save file
+- Ctrl + O     : Open file
+- Ctrl + Left  : Move cursor to the word on the left
+- Ctrl + Right : Move cursor to the word on the right
+
+File manager
+============
+Noro contains another built in program: the file manager
+It can be opened through the menu or by using the files command
+
+Keybinds:
+- Ctrl + O : Open folder
+- d        : Delete selected file
