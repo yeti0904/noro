@@ -263,6 +263,9 @@ class EditorProgram : Program {
 				default: break; // TODO: error
 			}
 		}
+		else if (key.mod == KeyMod.Shift) {
+			
+		}
 	}
 
 	override void OnResize(Vec2!ushort size) {

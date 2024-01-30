@@ -1,6 +1,7 @@
 module noro.terminal.buffer;
 
 import std.format;
+import std.algorithm;
 import noro.types;
 
 enum ColourMode {
@@ -64,15 +65,19 @@ struct Attr {
 			default: assert(0);
 		}
 	}
+
+	Attr Invert() {
+		return Attr(mode, bg, fg);
+	}
 }
 
 enum Character {
-	CornerUL = '┌',
-	CornerLL = '└',
-	CornerUR = '┐',
-	CornerLR = '┘',
-	VLine    = '│',
-	HLine    = '─',
+	CornerUL  = '┌',
+	CornerLL  = '└',
+	CornerUR  = '┐',
+	CornerLR  = '┘',
+	VLine     = '│',
+	HLine     = '─',
 	DCornerUL = '╔',
 	DCornerLL = '╚',
 	DCornerUR = '╗',

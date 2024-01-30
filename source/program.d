@@ -1,5 +1,6 @@
 module noro.program;
 
+public import noro.theme;
 public import noro.types;
 public import noro.ui.window;
 public import noro.terminal.input;

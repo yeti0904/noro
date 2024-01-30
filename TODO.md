@@ -18,6 +18,7 @@ Some things that need to be done with noro
 ## Window manager
 - [ ] Tiling
 - [ ] Buttons (requires mouse support)
+- [ ] Tabs
 
 ## Noro script
 - [ ] Include directive

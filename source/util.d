@@ -65,3 +65,18 @@ string ClockString() {
 
 	return format("%.2d:%.2d:%.2d", time.hour, time.minute, time.second);
 }
+
+string SizeAsString(ulong size) {
+	if (size < 1024) {
+		return format("%d B", size);
+	}
+	else if (size < 1024 * 1024) {
+		return format("%d KiB", size / 1024);
+	}
+	else if (size < 1024 * 1024 * 1024) {
+		return format("%d MiB", size / 1024 / 1024);
+	}
+	else {
+		return format("%d GiB", size / 1024 / 1024 / 1024);
+	}
+}
