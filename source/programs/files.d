@@ -2,6 +2,7 @@ module noro.programs.files;
 
 import std.file;
 import std.path;
+import std.range;
 import std.algorithm;
 import noro.app;
 import noro.util;
@@ -11,10 +12,12 @@ class FilesProgram : Program {
 	ThemeColour colours;
 	DirEntry[]  files;
 	size_t      caret;
+	size_t      scroll;
 	string      folder;
 	bool        parentAvailable;
 	bool        showHidden = false;
 	size_t      maxPathLength;
+	size_t      windowLines;
 
 	override void Init() {
 		folder = getcwd();
@@ -26,6 +29,7 @@ class FilesProgram : Program {
 		files         = [];
 		caret         = 0;
 		maxPathLength = 0;
+		scroll        = 0;
 
 		try {
 			if (dirName(folder) != folder) {
@@ -75,27 +79,56 @@ class FilesProgram : Program {
 	}
 
 	override void Input(KeyPress key) {
-		if (key.mod != 0) return;
+		if (key.mod == 0) {
+			switch (key.key) {
+				case Key.Up: {
+					if (caret > 0) {
+						-- caret;
 
-		switch (key.key) {
-			case Key.Up: {
-				if (caret > 0) -- caret;
-				break;
-			}
-			case Key.Down: {
-				if (caret < files.length - 1) ++ caret;
-				break;
-			}
-			case ' ': {
-				auto file = files[caret];
-
-				if (file.isDir()) {
-					folder = buildNormalizedPath(file.name);
-					UpdateFiles();
+						if (scroll > caret) {
+							scroll = caret;
+						}
+					}
+					break;
 				}
-				break;
+				case Key.Down: {
+					if (caret < files.length - 1) {
+						++ caret;
+
+						if (caret - scroll >= windowLines) {
+							++ scroll;
+						}
+					}
+					break;
+				}
+				case ' ': {
+					if (files.empty) break;
+					
+					auto file = files[caret];
+
+					if (file.isDir()) {
+						folder = buildNormalizedPath(file.name);
+						UpdateFiles();
+					}
+					break;
+				}
+				default: break;
 			}
-			default: break;
+		}
+		else if (key.mod == KeyMod.Ctrl) {
+			switch (key.key) {
+				case 'o': {
+					CreateInputWindow(
+						this, "Open folder", "Type a path:",
+						(Program program, string path) {
+							folder = path;
+							UpdateFiles();
+						}
+					);
+					break;
+				}
+				default: break;
+			}
 		}
 	}
 
@@ -104,12 +137,14 @@ class FilesProgram : Program {
 	}
 
 	override void Render(Buffer buf) {
+		windowLines = buf.GetSize().y;
+
 		auto theme = App.GetTheme().GetColour(colours);
 		buf.attr   = theme;
 		buf.Clear(' ');
 
-		foreach (i, ref file ; files) {
-			if (i == caret) {
+		foreach (i, ref file ; files[scroll .. $]) {
+			if (i == caret - scroll) {
 				buf.attr = theme.Invert();
 				buf.HLine(0, cast(ushort) i, buf.GetSize().x, ' ');
 			}
@@ -119,7 +154,7 @@ class FilesProgram : Program {
 
 			buf.caret = Vec2!ushort(0, cast(ushort) i);
 
-			if ((i == 0) && parentAvailable) {
+			if ((i == 0) && (scroll == 0) && parentAvailable) {
 				buf.Print("⬑  ");
 			}
 			else {
@@ -135,6 +170,8 @@ class FilesProgram : Program {
 			buf.Printf("%s", file.size.SizeAsString());
 		}
 
-		buf.caret = Vec2!ushort(cast(ushort) (buf.GetSize().x - 1), cast(ushort) caret);
+		buf.caret = Vec2!ushort(
+			cast(ushort) (buf.GetSize().x - 1), cast(ushort) (caret - scroll)
+		);
 	}
 }

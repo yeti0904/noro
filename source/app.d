@@ -117,24 +117,6 @@ class App {
 		buffer.SetBGColour(Colour16.Blue);
 		buffer.SetFGColour(Colour16.BrightBlue);
 		buffer.Clear(' ');
-		
-		// update alert
-		if (alert.active) {
-			if (alert.sw.peek.total!("seconds") > alert.activeTime) {
-				alert.active = false;
-			}
-			else {
-				string alertText = format("[ %s ]", alert.contents);
-
-				buffer.caret = Vec2!ushort(
-					cast(ushort) ((buffer.GetSize().x / 2) - (alertText.length / 2)),
-					cast(ushort) (buffer.GetSize().y / 2)
-				);
-				buffer.SetBGColour(Colour16.Green);
-				buffer.SetFGColour(Colour16.Black);
-				buffer.Print(alertText);
-			}
-		}
 
 		// render top bar
 		buffer.SetBGColour(Colour16.White);
@@ -153,6 +135,24 @@ class App {
 
 		// render UI
 		ui.Render(buffer);
+		
+		// update alert
+		if (alert.active) {
+			if (alert.sw.peek.total!("seconds") > alert.activeTime) {
+				alert.active = false;
+			}
+			else {
+				string alertText = format("[ %s ]", alert.contents);
+
+				buffer.caret = Vec2!ushort(
+					cast(ushort) ((buffer.GetSize().x / 2) - (alertText.length / 2)),
+					cast(ushort) (buffer.GetSize().y / 2)
+				);
+				buffer.SetBGColour(Colour16.Green);
+				buffer.SetFGColour(Colour16.Black);
+				buffer.Print(alertText);
+			}
+		}
 
 		buffer.caret = Vec2!ushort(buffer.GetSize().x, 0);
 		ui.SetCaret(buffer);
