@@ -8,6 +8,7 @@ import std.algorithm;
 import noro.app;
 import noro.util;
 import noro.program;
+import noro.programs.editor;
 
 class FilesProgram : Program {
 	ThemeColour colours;
@@ -102,6 +103,18 @@ class FilesProgram : Program {
 					}
 					break;
 				}
+				case Key.Home:
+				case Key.Home2: {
+					caret  = 0;
+					scroll = 0;
+					break;
+				}
+				case Key.End:
+				case Key.End2: {
+					caret  = files.length - 1;
+					scroll = files.length - windowLines;
+					break;
+				}
 				case ' ': {
 					if (files.empty) break;
 					
@@ -141,6 +154,30 @@ class FilesProgram : Program {
 					);
 					break;
 				}
+				case 'r': {
+					CreateInputWindow(
+						this, "Rename file", "New filename:", (Program, string name) {
+							auto file = files[caret];
+							auto newPath = cast(string) asNormalizedPath(
+								dirName(file.name) ~ '/' ~ name
+							).array;
+
+							try {
+								rename(file.name, newPath);
+							}
+							catch (FileException e) {
+								App.Instance().NewAlert(e.msg, 3);
+								return;
+							}
+
+							files[caret] = DirEntry(newPath);
+						}
+					);
+					break;
+				}
+				case 'o': {
+					break; // TODO
+				}
 				default: break;
 			}
 		}
@@ -154,6 +191,10 @@ class FilesProgram : Program {
 							UpdateFiles();
 						}
 					);
+					break;
+				}
+				case 'r': {
+					UpdateFiles();
 					break;
 				}
 				default: break;

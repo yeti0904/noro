@@ -116,6 +116,8 @@ static dchar XTermKey(char ch) {
 		case 'B': return Key.Down;
 		case 'C': return Key.Right;
 		case 'D': return Key.Left;
+		case 'F': return Key.End;
+		case 'H': return Key.Home;
 		default:  return Key.Null;
 	}
 }
