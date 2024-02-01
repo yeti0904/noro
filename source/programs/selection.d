@@ -52,7 +52,7 @@ class SelectionProgram : Program {
 			case ' ':
 			case '\n': {
 				onComplete(program, options[caret]);
-				App.Instance().ui.DeleteTop(); // TODO: idk look at input.d
+				App.Instance().GetUI().DeleteTop(); // TODO: idk look at input.d
 				break;
 			}
 			default: break;

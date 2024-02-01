@@ -71,7 +71,7 @@ class InputProgram : Program {
 			}
 			case '\n': {
 				onComplete(program, input);
-				App.Instance().ui.DeleteTop(); // TODO: make this safer (can cause bugs)
+				App.Instance().GetUI().DeleteTop(); // TODO: make this safer (can cause bugs)
 				break;
 			}
 			default: {

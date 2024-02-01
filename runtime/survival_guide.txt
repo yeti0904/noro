@@ -14,13 +14,14 @@ Note: The keybinds documented below are the default noro keybinds, your config
       may differ
 Shortcut mode
 ============
-- m     - Switches to window mode
-- f     - Maximises the current window
-- F     - Fullscreens the current window
-- b     - Toggles the border on the current window
-- a     - Opens the menu program
-- q     - Closes the current window
-- (Tab) - Moves the bottom window to the top
+- m        - Switches to window mode
+- f        - Maximises the current window
+- F        - Fullscreens the current window
+- b        - Toggles the border on the current window
+- a        - Opens the menu program
+- q        - Closes the current window
+- (Tab)    - Moves the bottom window to the top
+- (1 to 0) - Set current workspace to pressed key (0 for 10)
 
 Window mode
 ===========
@@ -58,18 +59,20 @@ As for the keys you can add any of these:
 
 Noro has commands which (for now) can only be executed through shortcuts
 Here's a list of them with what parameters they take:
-- window                - Switches the editor to window mode
-- maximise              - Maximises the current window
-- fullscreen            - Fullscreens the current window
-- border                - Toggles the border on the current window
-- menu                  - Opens the program menu
-- close                 - Closes the current window
-- switch                - Moves the bottom window to the top
-- shortcut <keys> <cmd> - Defines a new shortcut with the given keys and command
-- shortcuts_off         - Disables the shortcut key
-- editor                - Opens the text editor in the current window (explained later)
-- theme <theme name>    - Sets the current theme (more info on themes later)
-- files                 - Opens the file manager in the current window (explained later)
+- window                  - Switches the editor to window mode
+- maximise                - Maximises the current window
+- fullscreen              - Fullscreens the current window
+- border                  - Toggles the border on the current window
+- menu                    - Opens the program menu
+- close                   - Closes the current window
+- switch                  - Moves the bottom window to the top
+- shortcut <keys> <cmd>   - Defines a new shortcut with the given keys and command
+- shortcuts_off           - Disables the shortcut key
+- editor                  - Opens the text editor in the current window (explained later)
+- theme <theme name>      - Sets the current theme (more info on themes later)
+- files                   - Opens the file manager in the current window (explained later)
+- set_workspaces <amount> - allocates `amount` workspaces
+- set_workspace <which>   - sets current workspace to `which`
 
 These commands can help to customise how noro is too
 For example, you could add the following lines to your autoexec.noro to enable minimal

@@ -5,3 +5,13 @@ shortcut b border
 shortcut a menu
 shortcut q close
 shortcut tab switch
+shortcut 1 "set_workspace 1"
+shortcut 2 "set_workspace 2"
+shortcut 3 "set_workspace 3"
+shortcut 4 "set_workspace 4"
+shortcut 5 "set_workspace 5"
+shortcut 6 "set_workspace 6"
+shortcut 7 "set_workspace 7"
+shortcut 8 "set_workspace 8"
+shortcut 9 "set_workspace 9"
+shortcut 0 "set_workspace 10"

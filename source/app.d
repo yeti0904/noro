@@ -34,10 +34,13 @@ struct Alert {
 	string    contents;
 }
 
+struct Workspace {
+	UIManager ui;
+}
+
 class App {
 	bool            running;
 	Screen          screen;
-	UIManager       ui;
 	AppStatus       status;
 	KeyPress        key;
 	dchar           lastCommand;
@@ -46,6 +49,8 @@ class App {
 	bool            shortcutsEnabled = true;
 	Alert           alert;
 	Theme           theme;
+	Workspace[]     workspaces;
+	size_t          workspace;
 
 	private bool init;
 
@@ -68,15 +73,30 @@ class App {
 	}
 
 	void Init() {
-		running = true;
-		status  = AppStatus.Standby;
-		screen  = new Screen();
-		ui      = new UIManager();
-		key     = KeyPress(' ', 0);
-		theme   = new Theme();
+		running    = true;
+		status     = AppStatus.Standby;
+		screen     = new Screen();
+		key        = KeyPress(' ', 0);
+		theme      = new Theme();
+		
+		AllocateWorkspaces(10);
 
 		commands = GetCommands();
 		Config();
+	}
+
+	void AllocateWorkspaces(size_t amount) {
+		workspaces = new Workspace[](amount);
+
+		foreach (ref workspace ; workspaces) {
+			workspace.ui = new UIManager();
+		}
+		
+		workspace = 0;
+	}
+
+	UIManager GetUI() {
+		return workspaces[workspace].ui;
 	}
 
 	void RunCommand(string cmd) {
@@ -111,7 +131,7 @@ class App {
 
 	void Update() {
 		// update
-		ui.Update();
+		GetUI().Update();
 
 		auto buffer = screen.buffer;
 		buffer.SetBGColour(Colour16.Blue);
@@ -123,7 +143,12 @@ class App {
 		buffer.SetFGColour(Colour16.Black);
 		buffer.HLine(0, 0, buffer.GetSize().x, ' ');
 		buffer.caret = Vec2!ushort(0, 0);
-		buffer.Printf("noro π - %s", status);
+		buffer.Printf("noro π - %s  |", status);
+
+		foreach (i, ref iworkspace ; workspaces) {
+			// idk why but i feel proud of the use of ternary here
+			buffer.Printf(i == workspace? " [%d]" : " %d", i + 1);
+		}
 
 		string clock = ClockString();
 		buffer.caret = Vec2!ushort(
@@ -133,8 +158,9 @@ class App {
 
 		buffer.caret = Vec2!ushort(0, 0);
 
-		// render UI
-		ui.Render(buffer);
+		// the comment below shows the downsides of using sed to refactor code
+		// render GetUI()
+		GetUI().Render(buffer);
 		
 		// update alert
 		if (alert.active) {
@@ -155,7 +181,7 @@ class App {
 		}
 
 		buffer.caret = Vec2!ushort(buffer.GetSize().x, 0);
-		ui.SetCaret(buffer);
+		GetUI().SetCaret(buffer);
 		screen.Render();
 
 		auto input = GetKey();
@@ -177,7 +203,7 @@ class App {
 					status = AppStatus.Shortcut;
 				}
 				else {
-					ui.Input(input);
+					GetUI().Input(input);
 				}
 
 				break;
@@ -209,105 +235,105 @@ class App {
 						break;
 					}
 					case Key.Up: {
-						if ((input.mod & KeyMod.Shift) && (ui.Top().pos.y > 0)) {
-							-- ui.Top().pos.y;
+						if ((input.mod & KeyMod.Shift) && (GetUI().Top().pos.y > 0)) {
+							-- GetUI().Top().pos.y;
 						}
-						else if (ui.Top().pos.y >= 4) {
-							ui.Top().pos.y -= 4;
+						else if (GetUI().Top().pos.y >= 4) {
+							GetUI().Top().pos.y -= 4;
 						}
 						break;
 					}
 					case Key.Down: {
 						if (
 							(input.mod & KeyMod.Shift) &&
-							(ui.Top().pos.y < screenSize.y - 1)
+							(GetUI().Top().pos.y < screenSize.y - 1)
 						) {
-							++ ui.Top().pos.y;
+							++ GetUI().Top().pos.y;
 						}
-						else if (ui.Top().pos.y < screenSize.y - 5) {
-							ui.Top().pos.y += 4;
+						else if (GetUI().Top().pos.y < screenSize.y - 5) {
+							GetUI().Top().pos.y += 4;
 						}
 						break;
 					}
 					case Key.Left: {
-						if ((input.mod & KeyMod.Shift) && (ui.Top().pos.x > 0)) {
-							-- ui.Top().pos.x;
+						if ((input.mod & KeyMod.Shift) && (GetUI().Top().pos.x > 0)) {
+							-- GetUI().Top().pos.x;
 						}
-						else if (ui.Top().pos.x >= 4) {
-							ui.Top().pos.x -= 4;
+						else if (GetUI().Top().pos.x >= 4) {
+							GetUI().Top().pos.x -= 4;
 						}
 						break;
 					}
 					case Key.Right: {
 						if (
 							(input.mod & KeyMod.Shift) &&
-							(ui.Top().pos.x < screenSize.x - 1)
+							(GetUI().Top().pos.x < screenSize.x - 1)
 						) {
-							++ ui.Top().pos.x;
+							++ GetUI().Top().pos.x;
 						}
-						else if (ui.Top().pos.x < screenSize.x - 5) {
-							ui.Top().pos.x += 4;
+						else if (GetUI().Top().pos.x < screenSize.x - 5) {
+							GetUI().Top().pos.x += 4;
 						}
 						break;
 					}
 					case 'w': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 
 						if (size.y > 8) {
 							size.y -= 4;
-							ui.Top().Resize(size.x, size.y);
+							GetUI().Top().Resize(size.x, size.y);
 						}
 						break;
 					}
 					case 'a': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 
 						if (size.x > 8) {
 							size.x -= 4;
-							ui.Top().Resize(size.x, size.y);
+							GetUI().Top().Resize(size.x, size.y);
 						}
 						break;
 					}
 					case 's': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 						size.y += 4;
-						ui.Top().Resize(size.x, size.y);
+						GetUI().Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'd': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 						size.x += 4;
-						ui.Top().Resize(size.x, size.y);
+						GetUI().Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'W': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 
 						if (size.y > 5) {
 							-- size.y;
-							ui.Top().Resize(size.x, size.y);
+							GetUI().Top().Resize(size.x, size.y);
 						}
 						break;
 					}
 					case 'A': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 
 						if (size.x > 5) {
 							-- size.x;
-							ui.Top().Resize(size.x, size.y);
+							GetUI().Top().Resize(size.x, size.y);
 						}
 						break;
 					}
 					case 'S': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 						++ size.y;
-						ui.Top().Resize(size.x, size.y);
+						GetUI().Top().Resize(size.x, size.y);
 						break;
 					}
 					case 'D': {
-						auto size = ui.Top().GetSize();
+						auto size = GetUI().Top().GetSize();
 						++ size.x;
-						ui.Top().Resize(size.x, size.y);
+						GetUI().Top().Resize(size.x, size.y);
 						break;
 					}
 					default: break; // TODO: error

@@ -1,6 +1,7 @@
 module noro.commands;
 
 import std.utf;
+import std.conv;
 import std.file;
 import std.json;
 import std.range;
@@ -22,21 +23,21 @@ private void WindowMode(App app, string[] args) {
 private void Maximise(App app, string[] args) {
 	auto buffer = app.screen.buffer;
 	
-	app.ui.Top().pos = Vec2!ushort(0, 1);
-	app.ui.Top().Resize(buffer.GetSize().x, cast(ushort) (buffer.GetSize().y - 1));
+	app.GetUI().Top().pos = Vec2!ushort(0, 1);
+	app.GetUI().Top().Resize(buffer.GetSize().x, cast(ushort) (buffer.GetSize().y - 1));
 }
 
 private void FullScreen(App app, string[] args) {
 	auto buffer = app.screen.buffer;
 	
-	app.ui.Top().pos = Vec2!ushort(0, 0);
-	app.ui.Top().Resize(buffer.GetSize().x, buffer.GetSize().y);
+	app.GetUI().Top().pos = Vec2!ushort(0, 0);
+	app.GetUI().Top().Resize(buffer.GetSize().x, buffer.GetSize().y);
 }
 
 private void Border(App app, string[] args) {
-	if (!(cast(UIWindow) app.ui.Top())) return;
+	if (!(cast(UIWindow) app.GetUI().Top())) return;
 
-	auto win   = cast(UIWindow) app.ui.Top();
+	auto win   = cast(UIWindow) app.GetUI().Top();
 	win.border = !win.border;
 	win.Resize(win.GetSize().x, win.GetSize().y);
 }
@@ -47,22 +48,22 @@ private void Menu(App app, string[] args) {
 	window.name           = "Menu";
 	window.program        = new PageProgram(MenuPage());
 	window.program.parent = window;
-	app.ui.Add(window);
+	app.GetUI().Add(window);
 }
 
 private void Close(App app, string[] args) {
-	if (app.ui.elements.empty) {
+	if (app.GetUI().elements.empty) {
 		app.running = false;
 		return;
 	}
 	
-	app.ui.DeleteTop();
+	app.GetUI().DeleteTop();
 }
 
 private void Switch(App app, string[] args) {
-	if (app.ui.elements.length < 2) return;
+	if (app.GetUI().elements.length < 2) return;
 
-	app.ui.MoveTop(0);
+	app.GetUI().MoveTop(0);
 }
 
 private void NewShortcut(App app, string[] args) {
@@ -73,9 +74,9 @@ private void NewShortcut(App app, string[] args) {
 }
 
 private void Editor(App app, string[] args) {
-	if (!(cast(UIWindow) app.ui.Top())) return;
+	if (!(cast(UIWindow) app.GetUI().Top())) return;
 
-	auto win           = cast(UIWindow) app.ui.Top();
+	auto win           = cast(UIWindow) app.GetUI().Top();
 	win.program        = new EditorProgram();
 	win.program.parent = win;
 }
@@ -121,21 +122,45 @@ private void RunCommand(App app, string[] args) {
 	);
 }
 
+private void SetWorkspaces(App app, string[] args) {
+	size_t amount = parse!size_t(args[0]);
+
+	if (amount == 0) {
+		app.NewAlert("At least 1 workspace must be allocated", 3);
+		return;
+	}
+
+	app.AllocateWorkspaces(10);
+}
+
+private void SetWorkspace(App app, string[] args) {
+	size_t which = parse!size_t(args[0]);
+
+	if ((which > app.workspaces.length) || (which == 0)) {
+		app.NewAlert("Workspace index out of bounds", 3);
+		return;
+	}
+
+	app.workspace = which - 1;
+}
+
 Command[string] GetCommands() {
 	Command[string] ret;
 
-	ret["window"]        = Command(&WindowMode,       []);
-	ret["maximise"]      = Command(&Maximise,         []);
-	ret["fullscreen"]    = Command(&FullScreen,       []);
-	ret["border"]        = Command(&Border,           []);
-	ret["menu"]          = Command(&Menu,             []);
-	ret["close"]         = Command(&Close,            []);
-	ret["switch"]        = Command(&Switch,           []);
-	ret["shortcut"]      = Command(&NewShortcut,      [ArgType.String, ArgType.String]);
-	ret["editor"]        = Command(&Editor,           []);
-	ret["shortcuts_off"] = Command(&DisableShortcuts, []);
-	ret["theme"]         = Command(&SetTheme,         [ArgType.String]);
-	ret["command"]       = Command(&RunCommand,       []);
+	ret["window"]         = Command(&WindowMode,       []);
+	ret["maximise"]       = Command(&Maximise,         []);
+	ret["fullscreen"]     = Command(&FullScreen,       []);
+	ret["border"]         = Command(&Border,           []);
+	ret["menu"]           = Command(&Menu,             []);
+	ret["close"]          = Command(&Close,            []);
+	ret["switch"]         = Command(&Switch,           []);
+	ret["shortcut"]       = Command(&NewShortcut,      [ArgType.String, ArgType.String]);
+	ret["editor"]         = Command(&Editor,           []);
+	ret["shortcuts_off"]  = Command(&DisableShortcuts, []);
+	ret["theme"]          = Command(&SetTheme,         [ArgType.String]);
+	ret["command"]        = Command(&RunCommand,       []);
+	ret["set_workspaces"] = Command(&SetWorkspaces,    [ArgType.Numeric]);
+	ret["set_workspace"]  = Command(&SetWorkspace,     [ArgType.Numeric]);
 
 	return ret;
 }

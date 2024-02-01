@@ -29,7 +29,7 @@ void CreateInputWindow(
 		cast(ushort) ((app.screen.buffer.GetSize().y / 2) - (window.GetSize().y / 2))
 	);
 
-	app.ui.Add(window);
+	app.GetUI().Add(window);
 }
 
 void CreateSelectionWindow(
@@ -48,7 +48,7 @@ void CreateSelectionWindow(
 		cast(ushort) ((app.screen.buffer.GetSize().y / 2) - (window.GetSize().y / 2))
 	);
 
-	app.ui.Add(window);
+	app.GetUI().Add(window);
 }
 
 KeyPress ParseKey(string str) {
