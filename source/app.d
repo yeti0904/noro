@@ -201,57 +201,71 @@ class App {
 				break;
 			}
 			case AppStatus.Window: {
+				auto screenSize = buffer.GetSize();
+
 				switch (input.key) {
 					case 'q': {
 						status = AppStatus.Standby;
 						break;
 					}
 					case Key.Up: {
-						if (input.mod & KeyMod.Shift) {
+						if ((input.mod & KeyMod.Shift) && (ui.Top().pos.y > 0)) {
 							-- ui.Top().pos.y;
 						}
-						else {
+						else if (ui.Top().pos.y >= 4) {
 							ui.Top().pos.y -= 4;
 						}
 						break;
 					}
 					case Key.Down: {
-						if (input.mod & KeyMod.Shift) {
+						if (
+							(input.mod & KeyMod.Shift) &&
+							(ui.Top().pos.y < screenSize.y - 1)
+						) {
 							++ ui.Top().pos.y;
 						}
-						else {
+						else if (ui.Top().pos.y < screenSize.y - 5) {
 							ui.Top().pos.y += 4;
 						}
 						break;
 					}
 					case Key.Left: {
-						if (input.mod & KeyMod.Shift) {
+						if ((input.mod & KeyMod.Shift) && (ui.Top().pos.x > 0)) {
 							-- ui.Top().pos.x;
 						}
-						else {
+						else if (ui.Top().pos.x >= 4) {
 							ui.Top().pos.x -= 4;
 						}
 						break;
 					}
 					case Key.Right: {
-						if (input.mod & KeyMod.Shift) {
+						if (
+							(input.mod & KeyMod.Shift) &&
+							(ui.Top().pos.x < screenSize.x - 1)
+						) {
 							++ ui.Top().pos.x;
 						}
-						else {
+						else if (ui.Top().pos.x < screenSize.x - 5) {
 							ui.Top().pos.x += 4;
 						}
 						break;
 					}
 					case 'w': {
 						auto size = ui.Top().GetSize();
-						size.y -= 4;
-						ui.Top().Resize(size.x, size.y);
+
+						if (size.y > 8) {
+							size.y -= 4;
+							ui.Top().Resize(size.x, size.y);
+						}
 						break;
 					}
 					case 'a': {
 						auto size = ui.Top().GetSize();
-						size.x -= 4;
-						ui.Top().Resize(size.x, size.y);
+
+						if (size.x > 8) {
+							size.x -= 4;
+							ui.Top().Resize(size.x, size.y);
+						}
 						break;
 					}
 					case 's': {
@@ -268,14 +282,20 @@ class App {
 					}
 					case 'W': {
 						auto size = ui.Top().GetSize();
-						-- size.y;
-						ui.Top().Resize(size.x, size.y);
+
+						if (size.y > 5) {
+							-- size.y;
+							ui.Top().Resize(size.x, size.y);
+						}
 						break;
 					}
 					case 'A': {
 						auto size = ui.Top().GetSize();
-						-- size.x;
-						ui.Top().Resize(size.x, size.y);
+
+						if (size.x > 5) {
+							-- size.x;
+							ui.Top().Resize(size.x, size.y);
+						}
 						break;
 					}
 					case 'S': {
