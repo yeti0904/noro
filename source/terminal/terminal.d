@@ -20,14 +20,32 @@ class Terminal {
 	}
 
 	static Vec2!ushort GetSize() {
-		winsize winSize;
-		stdout.flush();
-		
-		if (ioctl(1, TIOCGWINSZ, &winSize) == -1) {
-			throw new TerminalException(cast(string) strerror(errno).fromStringz());
+		version (linux) {
+			winsize winSize;
+			stdout.flush();
+			
+			if (ioctl(1, TIOCGWINSZ, &winSize) == -1) {
+				throw new TerminalException(cast(string) strerror(errno).fromStringz());
+			}
+			
+			return Vec2!ushort(winSize.ws_col, winSize.ws_row);
 		}
-		
-		return Vec2!ushort(winSize.ws_col, winSize.ws_row);
+		else {
+			extern(C) int open(const char*, int, ...);
+
+			winsize winSize;
+
+			int fd = open("/dev/tty".toStringz(), 2);
+			if (fd < 0) {
+				throw new TerminalException("Failed to open /dev/tty");
+			}
+
+			if (ioctl(fd, TIOCGWINSZ, &winSize) == -1) {
+				throw new TerminalException(cast(string) strerror(errno).fromStringz());
+			}
+
+			return Vec2!ushort(winSize.ws_col, winSize.ws_row);
+		}
 	}
 
 	static void Clear() {
