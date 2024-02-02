@@ -89,6 +89,12 @@ class PageProgram : Program {
 		
 	}
 
+	void LoadElements(Element[] pelements) {
+		elements = pelements;
+		caret    = 0;
+		scroll   = 0;
+	}
+
 	void Scroll() { // TODO: completely broken!!
 		long scaret  = cast(long) caret; // carrot hahaha
 		long sscroll = cast(long) scroll;

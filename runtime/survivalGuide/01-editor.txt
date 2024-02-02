@@ -1,0 +1,9 @@
+Text editor
+===========
+The text editor is noro's main purpose, and it can be opened with the `editor` command
+
+Keybinds:
+- Ctrl + S     : Save file
+- Ctrl + O     : Open file
+- Ctrl + Left  : Move cursor to the word on the left
+- Ctrl + Right : Move cursor to the word on the right
