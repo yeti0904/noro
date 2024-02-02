@@ -28,6 +28,7 @@ guide and then press space to see all of the documentation for noro usage
 ### Operating systems
 - Linux - works
 - macOS - compiles but doesn't work
+- FreeBSD - compiles but doesn't work (it doesn't render anything but input works)
 - Windows - not supported
 
 ### Terminals
