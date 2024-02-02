@@ -20,29 +20,14 @@ class Terminal {
 	}
 
 	static Vec2!ushort GetSize() {
-		extern(C) int open(const char*, int, ...);
+		winsize winSize;
+		stdout.flush();
 		
-		version (linux) {
-			winsize winSize;
-			stdout.flush();
-			
-			if (ioctl(1, TIOCGWINSZ, &winSize) == -1) {
-				throw new TerminalException(cast(string) strerror(errno).fromStringz());
-			}
-			
-			return Vec2!ushort(winSize.ws_col, winSize.ws_row);
+		if (ioctl(1, TIOCGWINSZ, &winSize) == -1) {
+			throw new TerminalException(cast(string) strerror(errno).fromStringz());
 		}
-		else {
-			winsize winSize;
-
-			int fd = File("/dev/tty", "rwb").fileno;
-
-			if (ioctl(fd, TIOCGWINSZ, &winSize) == -1) {
-				throw new TerminalException(cast(string) strerror(errno).fromStringz());
-			}
-
-			return Vec2!ushort(winSize.ws_col, winSize.ws_row);
-		}
+		
+		return Vec2!ushort(winSize.ws_col, winSize.ws_row);
 	}
 
 	static void Clear() {
