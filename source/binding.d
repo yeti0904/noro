@@ -22,22 +22,43 @@ alias cc_t     = ubyte;
 alias speed_t  = int;
 alias tcflag_t = int;
 
-const int NCCS      = 32;
-const int TCSAFLUSH = 2;
-const int ICANON    = 2;
-const int VMIN      = 6;
-const int VTIME     = 5;
-const int TCSANOW   = 0;
-const int ECHO      = 8;
-const int BRKINT    = 2;
-const int ICRNL     = 256;
-const int INPCK     = 16;
-const int ISTRIP    = 32;
-const int IXON      = 1024;
-const int OPOST     = 48;
-const int IEXTEN    = 32768;
-const int ISIG      = 1;
-const int CS8       = 48;
+version (linux) {
+	const int NCCS      = 32;
+	const int TCSAFLUSH = 2;
+	const int ICANON    = 2;
+	const int VMIN      = 6;
+	const int VTIME     = 5;
+	const int TCSANOW   = 0;
+	const int ECHO      = 8;
+	const int BRKINT    = 2;
+	const int ICRNL     = 256;
+	const int INPCK     = 16;
+	const int ISTRIP    = 32;
+	const int IXON      = 1024;
+	const int OPOST     = 48;
+	const int IEXTEN    = 32768;
+	const int ISIG      = 1;
+	const int CS8       = 48;
+}
+else {
+	// from FreeBSD values
+	const int NCCS      = 20;
+	const int TCSAFLUSH = 2;
+	const int ICANON    = 256;
+	const int VMIN      = 16;
+	const int VTIME     = 17;
+	const int TCSANOW   = 0;
+	const int ECHO      = 8;
+	const int BRKINT    = 2;
+	const int ICRNL     = 256;
+	const int INPCK     = 16;
+	const int ISTRIP    = 32;
+	const int IXON      = 512;
+	const int OPOST     = 1;
+	const int IEXTEN    = 1024;
+	const int ISIG      = 128;
+	const int CS8       = 768;
+}
 
 struct termios {
 	tcflag_t   c_iflag;
