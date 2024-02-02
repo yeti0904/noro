@@ -20,6 +20,8 @@ class Terminal {
 	}
 
 	static Vec2!ushort GetSize() {
+		extern(C) int open(const char*, int, ...);
+		
 		version (linux) {
 			winsize winSize;
 			stdout.flush();
@@ -31,14 +33,9 @@ class Terminal {
 			return Vec2!ushort(winSize.ws_col, winSize.ws_row);
 		}
 		else {
-			extern(C) int open(const char*, int, ...);
-
 			winsize winSize;
 
-			int fd = open("/dev/tty".toStringz(), 2);
-			if (fd < 0) {
-				throw new TerminalException("Failed to open /dev/tty");
-			}
+			int fd = File("/dev/tty", "rwb").fileno;
 
 			if (ioctl(fd, TIOCGWINSZ, &winSize) == -1) {
 				throw new TerminalException(cast(string) strerror(errno).fromStringz());
