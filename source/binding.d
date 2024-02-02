@@ -65,7 +65,11 @@ struct termios {
 	tcflag_t   c_oflag;
 	tcflag_t   c_cflag;
 	tcflag_t   c_lflag;
-	ubyte      pad1;
+
+	version (linux) {
+		ubyte pad1;
+	}
+	
 	cc_t[NCCS] c_cc;
 	speed_t    c_ispeed;
 	speed_t    c_ospeed;
