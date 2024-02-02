@@ -13,7 +13,13 @@ struct winsize {
 	ushort ws_ypixel;
 }
 
-const int TIOCGWINSZ = 21523;
+version (linux) {
+	const int TIOCGWINSZ = 21523;
+}
+else {
+	// from FreeBSD
+	const int TIOCGWINSZ = 1074295912;
+}
 
 /************************/
 /*       termios        */
