@@ -1,10 +1,18 @@
 module noro.terminal.terminal;
 
 import std.stdio;
+import std.string;
+import noro.util;
 import noro.types;
 import noro.binding;
 
 static termios originalTermios;
+
+class TerminalException : Exception {
+	this(string msg, string file = __FILE__, size_t line = __LINE__) {
+		super(msg, file, line);
+	}
+}
 
 class Terminal {
 	static void Init() {
@@ -14,7 +22,11 @@ class Terminal {
 	static Vec2!ushort GetSize() {
 		winsize winSize;
 		stdout.flush();
-		ioctl(1, TIOCGWINSZ, &winSize);
+		
+		if (ioctl(1, TIOCGWINSZ, &winSize) == -1) {
+			throw new TerminalException(cast(string) strerror(errno).fromStringz());
+		}
+		
 		return Vec2!ushort(winSize.ws_col, winSize.ws_row);
 	}
 
