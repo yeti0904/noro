@@ -7,10 +7,10 @@
 	<a href="https://justforfunnoreally.dev"><img src="https://img.shields.io/badge/justforfunnoreally-dev-9ff"</a>
 </p>
 
-noro is a text editor for the terminal that allows for multitasking (which is achieved
-using a window manager)
+Noro is a text editor (among other things) that aims to make many common tasks possible
+in its environment
 
-it also doesn't use any third party libraries
+The environment is a window manager with workspaces, shown in the screenshot below
 
 ![image](images/screenshot.png)
 
@@ -37,4 +37,12 @@ guide and then press space to see all of the documentation for noro usage
 - konsole on Linux - works
 - mlterm on Linux - works, but cursor invisible
 - xterm on Linux - works, but some characters are broken
+- xterm on FreeBSD - works
 - yterm on Linux - doesn't work at all
+
+## Feature plans
+- A good text editor
+- A file manager
+- A music player (maybe)
+- An IRC client (maybe? IRC isn't really used much)
+- Extendable - loading plugins written in C (maybe) or D
