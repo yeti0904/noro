@@ -5,6 +5,7 @@ import std.array;
 import std.stdio;
 import std.range;
 import std.format;
+import std.string;
 import std.datetime.stopwatch;
 import noro.util;
 import noro.theme;
@@ -20,6 +21,7 @@ import noro.programs.page;
 import noro.terminal.input;
 import noro.terminal.screen;
 import noro.terminal.terminal;
+import noro.debugging.keyTest;
 
 enum AppStatus {
 	Standby,
@@ -345,7 +347,37 @@ class App {
 	}
 }
 
-void main() {
+const string appHelp = "
+Usage: %s [FLAGS]
+
+Flags:
+	--help    : Show this help message
+	--keyTest : Runs the keyTest debugging program
+";
+
+int main(string[] args) {
+	for (size_t i = 1; i < args.length; ++ i) {
+		if (args[i][0] == '-') {
+			switch (args[i]) {
+				case "--help": {
+					writefln(appHelp.strip(), args[0]);
+					return 0;
+				}
+				case "--keyTest": {
+					KeyTestProgram();
+					return 0;
+				}
+				default: {
+					stderr.writefln("Unrecognised flag '%s'", args[i]);
+					return 1;
+				}
+			}
+		}
+		else {
+			// idk
+		}
+	}
+
 	try {
 		auto app = App.Instance();
 		app.Init();
@@ -359,5 +391,8 @@ void main() {
 		Terminal.SetRawMode(false);
 		Terminal.SetEcho(true);
 		stderr.writeln(text(e).replace("\n", "\r\n"));
+		return 1;
 	}
+
+	return 0;
 }
