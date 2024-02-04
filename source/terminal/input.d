@@ -149,6 +149,7 @@ KeyPress GetKey() {
 		case Key.Null:     return KeyPress(Key.Null, 0);
 		case '\x1b':       break;
 		case '\r':         return KeyPress('\n',    0);
+		case 8:            return KeyPress(Key.Backspace, 0);
 		case 9:            return KeyPress(Key.Tab, 0);
 		case ('a' & 0x1F): return KeyPress('a',    KeyMod.Ctrl);
 		case ('b' & 0x1F): return KeyPress('b',    KeyMod.Ctrl);
@@ -157,7 +158,7 @@ KeyPress GetKey() {
 		case ('e' & 0x1F): return KeyPress('e',    KeyMod.Ctrl);
 		case ('f' & 0x1F): return KeyPress('f',    KeyMod.Ctrl);
 		case ('g' & 0x1F): return KeyPress('g',    KeyMod.Ctrl);
-		case ('h' & 0x1F): return KeyPress('h',    KeyMod.Ctrl);
+		// case ('h' & 0x1F): return KeyPress('h',    KeyMod.Ctrl);
 		// case ('i' & 0x1F): return KeyPress('i',    KeyMod.Ctrl);
 		case ('j' & 0x1F): return KeyPress('j',    KeyMod.Ctrl);
 		case ('k' & 0x1F): return KeyPress('k',    KeyMod.Ctrl);
