@@ -14,3 +14,4 @@ noro-test-*
 *.o
 *.obj
 *.lst
+a.out
