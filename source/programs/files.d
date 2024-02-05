@@ -236,8 +236,10 @@ class FilesProgram : Program {
 				buf.Print("/");
 			}
 
-			buf.caret.x = cast(ushort) (maxPathLength + 5);
-			buf.Printf("%s", file.size.SizeAsString());
+			if (!file.isDir()) {
+				buf.caret.x = cast(ushort) (maxPathLength + 5);
+				buf.Printf("%s", file.size.SizeAsString());
+			}
 		}
 
 		buf.caret = Vec2!ushort(
