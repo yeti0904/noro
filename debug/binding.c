@@ -6,10 +6,10 @@ int main(void) {
 	struct winsize winSize;
 	void*          ptr = &winSize;
 	puts("winsize structure from ioctl");
-	printf("ws_row    = %d\n", (int) (ptr - (void*) &winSize.ws_row));
-	printf("ws_col    = %d\n", (int) (ptr - (void*) &winSize.ws_col));
-	printf("ws_xpixel = %d\n", (int) (ptr - (void*) &winSize.ws_xpixel));
-	printf("ws_ypixel = %d\n", (int) (ptr - (void*) &winSize.ws_ypixel));
+	printf("ws_row    = %d\n", (int) ((void*) &winSize.ws_row    - ptr));
+	printf("ws_col    = %d\n", (int) ((void*) &winSize.ws_col    - ptr));
+	printf("ws_xpixel = %d\n", (int) ((void*) &winSize.ws_xpixel - ptr));
+	printf("ws_ypixel = %d\n", (int) ((void*) &winSize.ws_ypixel - ptr));
 
 	puts("\nioctl constants");
 	printf("TIOCGWINSZ = %d\n", TIOCGWINSZ);
@@ -40,12 +40,12 @@ int main(void) {
 	puts("\ntermios structure");
 	struct termios termiosStruct;
 	ptr = &termiosStruct;
-	printf("c_iflag  = %d\n", (int) (ptr - (void*) &termiosStruct.c_iflag));
-	printf("c_oflag  = %d\n", (int) (ptr - (void*) &termiosStruct.c_oflag));
-	printf("c_cflag  = %d\n", (int) (ptr - (void*) &termiosStruct.c_cflag));
-	printf("c_lflag	 = %d\n", (int) (ptr - (void*) &termiosStruct.c_lflag));
-	printf("c_cc     = %d\n", (int) (ptr - (void*) &termiosStruct.c_cc));
-	printf("c_ispeed = %d\n", (int) (ptr - (void*) &termiosStruct.c_ispeed));
-	printf("c_ospeed = %d\n", (int) (ptr - (void*) &termiosStruct.c_ospeed));
+	printf("c_iflag  = %d\n", (int) ((void*) &termiosStruct.c_iflag  - ptr));
+	printf("c_oflag  = %d\n", (int) ((void*) &termiosStruct.c_oflag  - ptr));
+	printf("c_cflag  = %d\n", (int) ((void*) &termiosStruct.c_cflag  - ptr));
+	printf("c_lflag	 = %d\n", (int) ((void*) &termiosStruct.c_lflag  - ptr));
+	printf("c_cc     = %d\n", (int) ((void*) &termiosStruct.c_cc     - ptr));
+	printf("c_ispeed = %d\n", (int) ((void*) &termiosStruct.c_ispeed - ptr));
+	printf("c_ospeed = %d\n", (int) ((void*) &termiosStruct.c_ospeed - ptr));
 	return 0;
 }
