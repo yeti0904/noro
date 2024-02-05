@@ -27,7 +27,7 @@ guide and then press space to see all of the documentation for noro usage
 ## Compatibility
 ### Operating systems
 - Linux - works
-- macOS - compiles but doesn't work
+- macOS - works
 - FreeBSD - works
 - Windows - not supported
 
