@@ -24,9 +24,16 @@ else {
 /************************/
 /*       termios        */
 /************************/
-alias cc_t     = ubyte;
-alias speed_t  = int;
-alias tcflag_t = int;
+alias cc_t = ubyte;
+
+version (OSX) {
+	alias speed_t  = long;
+	alias tcflag_t = long;
+}
+else {
+	alias speed_t  = int;
+	alias tcflag_t = int;
+}
 
 version (linux) {
 	const int NCCS      = 32;
