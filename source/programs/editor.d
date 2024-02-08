@@ -288,7 +288,6 @@ class EditorProgram : Program {
 					if (!selected) {
 						selected     = true;
 						selectionPos = caret;
-						break;
 					}
 
 					CursorLeft();
@@ -298,7 +297,6 @@ class EditorProgram : Program {
 					if (!selected) {
 						selected     = true;
 						selectionPos = caret;
-						break;
 					}
 
 					CursorRight();
@@ -308,7 +306,6 @@ class EditorProgram : Program {
 					if (!selected) {
 						selected     = true;
 						selectionPos = caret;
-						break;
 					}
 
 					CursorUp();
@@ -318,7 +315,6 @@ class EditorProgram : Program {
 					if (!selected) {
 						selected     = true;
 						selectionPos = caret;
-						break;
 					}
 
 					CursorDown();
