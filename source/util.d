@@ -14,8 +14,9 @@ import noro.terminal.input;
 import noro.terminal.buffer;
 import noro.programs.selection;
 
-public import core.stdc.string : strerror;
 public import core.stdc.errno;
+public import core.stdc.stdlib : exit;
+public import core.stdc.string : strerror;
 
 void CreateInputWindow(
 	Program program, string title, string msg, void delegate(Program, string) func

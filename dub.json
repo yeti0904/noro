@@ -3,10 +3,16 @@
 		"yeti0904"
 	],
 	"copyright": "Copyright © 2023, yeti0904",
+	"dependencies": {
+		"bindbc-sdl": "~>1.4.5"
+	},
+	"versions": [
+		"SDL_Mixer_200"
+	],
 	"description": "A text editor",
-	"license": "MIT",
-	"name": "noro",
 	"dflags": [
 		"-J."
-	]
+	],
+	"license": "MIT",
+	"name": "noro"
 }

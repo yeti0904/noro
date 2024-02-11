@@ -26,26 +26,9 @@ static private const ThemePair[] themes = [
 ];
 
 void Config() {
-	string homeFolder = environment.get("HOME");
-
-	if (homeFolder is null) {
-		stderr.writeln("your computer broken :(");
-		exit(1);
-	}
-
-	string configFolder = format("%s/.config", homeFolder);
-
-	if (!exists(configFolder)) {
-		mkdir(configFolder);
-	}
-
-	configFolder ~= "/noro";
-
-	if (!exists(configFolder)) {
-		mkdir(configFolder);
-	}	
-
-	string themesFolder = format("%s/themes", configFolder);
+	auto app          = App.Instance();
+	auto configFolder = App.GetNoroPath();
+	auto themesFolder = format("%s/themes", configFolder);
 
 	if (!exists(themesFolder)) {
 		mkdir(themesFolder);
@@ -65,7 +48,6 @@ void Config() {
 		std.file.write(autoexecPath, defaultAutoexec);
 	}
 
-	auto app = App.Instance();
 
 	foreach (i, ref line ; autoexecPath.readText().split("\n")) {
 		try {

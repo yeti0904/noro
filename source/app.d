@@ -1,6 +1,7 @@
 module noro.app;
 
 import std.conv;
+import std.file;
 import std.array;
 import std.stdio;
 import std.range;
@@ -22,6 +23,8 @@ import noro.terminal.input;
 import noro.terminal.screen;
 import noro.terminal.terminal;
 import noro.debugging.keyTest;
+
+import std.process : environment;
 
 enum AppStatus {
 	Standby,
@@ -72,6 +75,29 @@ class App {
 
 	static Theme GetTheme() {
 		return App.Instance().theme;
+	}
+
+	static string GetNoroPath() {
+		string homeFolder = environment.get("HOME");
+
+		if (homeFolder is null) {
+			stderr.writeln("your computer broken :(");
+			exit(1);
+		}
+
+		string configFolder = format("%s/.config", homeFolder);
+
+		if (!exists(configFolder)) {
+			mkdir(configFolder);
+		}
+
+		configFolder ~= "/noro";
+
+		if (!exists(configFolder)) {
+			mkdir(configFolder);
+		}
+
+		return configFolder;
 	}
 
 	void Init() {
