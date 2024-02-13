@@ -79,7 +79,7 @@ class SelectionProgram : Program {
 
 			if (i == caret) {
 				buf.attr = theme.Invert();
-				buf.HLine(0, buf.caret.y, cast(ushort) (buf.GetSize().x - 1), ' ');
+				buf.HLine(0, buf.caret.y, buf.GetSize().x, ' ');
 			}
 			else {
 				buf.attr = theme;
@@ -88,8 +88,5 @@ class SelectionProgram : Program {
 			buf.caret.x = cast(ushort) ((buf.GetSize().x / 2) - (option.length / 2));
 			buf.Print(option);
 		}
-
-		buf.caret.x = cast(ushort) (buf.GetSize().x - 1);
-		buf.caret.y = cast(ushort) (optionStart + caret);
 	}
 }

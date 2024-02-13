@@ -21,6 +21,10 @@ class FilesProgram : Program {
 	size_t      maxPathLength;
 	size_t      windowLines;
 
+	this() {
+		cursorVisible = false;
+	}
+
 	override void Init() {
 		folder = getcwd();
 		UpdateFiles();
@@ -241,9 +245,5 @@ class FilesProgram : Program {
 				buf.Printf("%s", file.size.SizeAsString());
 			}
 		}
-
-		buf.caret = Vec2!ushort(
-			cast(ushort) (buf.GetSize().x - 1), cast(ushort) (caret - scroll)
-		);
 	}
 }

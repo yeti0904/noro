@@ -12,6 +12,7 @@ class AudioException : Exception {
 
 class Audio {
 	Mix_Music* music;
+	bool       available;
 
 	this() {
 		
@@ -27,16 +28,22 @@ class Audio {
 		return instance;
 	}
 
+	static bool Available() {
+		return Audio.Instance().available;
+	}
+
 	void Error(Char, A...)(in Char[] fmt, A args) {
 		throw new AudioException(format(fmt, args));
 	}
 
 	void Init() {
 		if (loadSDL() != sdlSupport) {
-			throw new AudioException("Failed to load SDL");
+			available = false;
+			return;
 		}
 		if (loadSDLMixer() < SDLMixerSupport.v2_0_0) {
-			throw new AudioException("Failed to load SDL Mixer");
+			available = false;
+			return;
 		}
 
 		if (SDL_Init(SDL_INIT_AUDIO) < 0) {
@@ -60,15 +67,21 @@ class Audio {
 	}
 
 	void Free() {
-		if (music !is null) {
-			Mix_FreeMusic(music);
-		}
+		if (available) {
+			if (music !is null) {
+				Mix_FreeMusic(music);
+			}
 
-		Mix_Quit();
-		SDL_Quit();
+			Mix_Quit();
+			SDL_Quit();
+		}
 	}
 
 	void Play(string path) {
+		if (!available) {
+			throw new AudioException("Audio not available");
+		}
+		
 		if (music !is null) {
 			Mix_FreeMusic(music);
 		}

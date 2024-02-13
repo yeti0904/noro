@@ -3,7 +3,9 @@ module noro.uiManager;
 import std.range;
 import std.algorithm;
 import noro.ui.base;
+import noro.ui.window;
 import noro.terminal.input;
+import noro.terminal.terminal;
 
 class UIManager {
 	UIBase[] elements;
@@ -45,6 +47,8 @@ class UIManager {
 			elem.Render(elem is elements[$ - 1]);
 			buf.BlitBuffer(elem.buffer, elem.pos.x, elem.pos.y);
 		}
+
+		Terminal.SetCursorVisibility(elements.empty? false : Top().CursorVisible());
 	}
 
 	void SetCaret(Buffer buf) {

@@ -28,6 +28,7 @@ class Screen {
 		Terminal.SetAltBuffer(false);
 		Terminal.SetRawMode(false);
 		Terminal.SetEcho(true);
+		Terminal.SetCursorVisibility(true);
 	}
 
 	void Render() {

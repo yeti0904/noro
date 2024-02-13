@@ -5,6 +5,7 @@ import noro.types;
 import noro.ui.window;
 import noro.programs.page;
 import noro.programs.files;
+import noro.programs.music;
 import noro.programs.editor;
 import noro.pages.survivalGuide;
 
@@ -33,6 +34,12 @@ Element[] MenuPage() {
 		page.parent.program = new FilesProgram();
 		page.parent.wasInit = false;
 		page.parent.name    = "Files";
+	});
+
+	ret ~= new LinkElement("Music player", (PageProgram page) {
+		page.parent.program = new MusicProgram();
+		page.parent.wasInit = false;
+		page.parent.name    = "Music player";
 	});
 
 	ret ~= new LinkElement("Survival guide", (PageProgram page) {

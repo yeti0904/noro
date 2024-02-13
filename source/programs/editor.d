@@ -22,8 +22,9 @@ class EditorProgram : Program {
 	string      fileName;
 
 	this() {
-		buffer  = [""];
-		colours = ThemeColour.Window;
+		buffer        = [""];
+		colours       = ThemeColour.Window;
+		cursorVisible = true;
 	}
 
 	override void Init() {

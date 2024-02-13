@@ -18,14 +18,16 @@ class InputProgram : Program {
 	void delegate(Program, string) onComplete;
 
 	this(string pmsg) {
-		msg = pmsg;
+		msg           = pmsg;
+		cursorVisible = true;
 	}
 
 	this(string pmsg, void delegate(Program, string) pfunc, Program pprogram) {
-		msg        = pmsg;
-		onComplete = pfunc;
-		program    = pprogram;
-		colours    = ThemeColour.Dialog;
+		msg           = pmsg;
+		onComplete    = pfunc;
+		program       = pprogram;
+		colours       = ThemeColour.Dialog;
+		cursorVisible = true;
 	}
 
 	override void Init() {

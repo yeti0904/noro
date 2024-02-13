@@ -124,4 +124,12 @@ class UIWindow : UIBase {
 	override Vec2!ushort GetSize() {
 		return buffer.GetSize();
 	}
+
+	override bool CursorVisible() {
+		if (program is null) {
+			return false;
+		}
+
+		return program.cursorVisible;
+	}
 }

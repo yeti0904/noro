@@ -1,6 +1,8 @@
 module noro.util;
 
 import std.uni;
+import std.file;
+import std.json;
 import std.array;
 import std.format;
 import std.datetime;
@@ -103,4 +105,28 @@ string SizeAsString(ulong size) {
 	else {
 		return format("%d GiB", size / 1024 / 1024 / 1024);
 	}
+}
+
+void MakeFolder(string path) {
+	if (!exists(path)) {
+		mkdir(path);
+	}
+}
+
+void MakeFile(string path, string contents) {
+	if (!exists(path)) {
+		std.file.write(path, contents);
+	}
+}
+
+bool AssertJSON(JSONValue value, string key, JSONType type) {
+	if (key !in value) {
+		return false;
+	}
+
+	if (value[key].type != type) {
+		return false;
+	}
+
+	return true;
 }

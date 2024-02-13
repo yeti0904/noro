@@ -14,4 +14,5 @@ class UIBase {
 	abstract void        Input(KeyPress key);
 	abstract void        Resize(ushort w, ushort h);
 	abstract Vec2!ushort GetSize();
+	abstract bool        CursorVisible();
 }

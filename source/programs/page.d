@@ -73,12 +73,13 @@ class PageProgram : Program {
 	ThemeColour colours;
 
 	this() {
-		
+		cursorVisible = true;
 	}
 
 	this(Element[] pelements) {
-		elements = pelements;
-		colours  = ThemeColour.Window;
+		elements      = pelements;
+		colours       = ThemeColour.Window;
+		cursorVisible = true;
 	}
 
 	override void Init() {
